@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 王千一的个人博客
+title: 拾忆
 subtitle: 生活与技术
 description: 记录生活和技术
-keywords:
-author: xdushepherd
+keywords: java，linux，life
+author: 王千一
 language: zh-Hans
-timezone: 
+timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
