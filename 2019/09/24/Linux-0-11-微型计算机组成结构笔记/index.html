@@ -87,16 +87,16 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，  地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。 数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。 控制总线，用于指挥执行的具体读写操作。  在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。 下图中的控制器都集成">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2019/09/24/pc-structure.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/24/modern-pc-structure.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/24/inter.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/24/inter-table.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/24/disk-structure.png">
-<meta property="og:updated_time" content="2019-10-10T05:43:23.420Z">
+<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png">
+<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/modern-pc-structure.png">
+<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter.png">
+<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter-table.png">
+<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/disk-structure.png">
+<meta property="og:updated_time" content="2019-10-10T05:54:18.897Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux-0.11-微型计算机组成结构笔记">
 <meta name="twitter:description" content="概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，  地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。 数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。 控制总线，用于指挥执行的具体读写操作。  在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。 下图中的控制器都集成">
-<meta name="twitter:image" content="http://yoursite.com/2019/09/24/pc-structure.png">
+<meta name="twitter:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png">
 
 
 
@@ -314,13 +314,13 @@
 </ol>
 <p>在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。</p>
 <p>下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。</p>
-<p><img src="../pc-structure.png" alt="test"></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png" alt="test"></p>
 <h3 id="现代pc"><a href="#现代pc" class="headerlink" title="现代pc"></a>现代pc</h3><p>现代pc的主板主要使用2个超大规模芯片构成的芯片组或者芯片集组成：北桥芯片和南桥芯片。</p>
 <ol>
 <li>北桥。用于CPU、内存、视频接口，具有很高的传输速率。</li>
 <li>南桥。用来管理低速、中速组件。</li>
 </ol>
-<p><img src="../modern-pc-structure.png" alt="test"></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/modern-pc-structure.png" alt="test"></p>
 <h3 id="io寻址方式和访问控制方式"><a href="#io寻址方式和访问控制方式" class="headerlink" title="io寻址方式和访问控制方式"></a>io寻址方式和访问控制方式</h3><p>CPU为了访问io接口控制器或者控制卡上的数据和状态信息，需要首先指定他们的地址。这种地址就成为IO端口地址或者简称端口。端口地址的设置方法有两种：统一编址和独立编址。</p>
 <ol>
 <li>统一编址。将IO控制器中的端口地址归入存储器寻址空间范围内。</li>
@@ -341,13 +341,13 @@
 <h4 id="CMOS存储器"><a href="#CMOS存储器" class="headerlink" title="CMOS存储器"></a>CMOS存储器</h4><p>CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常和实时时钟芯片集成，使用io指令来访问。</p>
 <h3 id="控制器和控制卡"><a href="#控制器和控制卡" class="headerlink" title="控制器和控制卡"></a>控制器和控制卡</h3><h4 id="中断控制器"><a href="#中断控制器" class="headerlink" title="中断控制器"></a>中断控制器</h4><p>80386中的中断控制器用于实现io设备的中断控制存取方式，并且能为15个设备提供独立的中断控制功能。</p>
 <p>在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。</p>
-<p><img src="../inter.png" alt></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter.png" alt></p>
 <p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
-<p><img src="../inter-table.png" alt></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter-table.png" alt></p>
 <h4 id="DMA控制器"><a href="#DMA控制器" class="headerlink" title="DMA控制器"></a>DMA控制器</h4><p>DMA控制器的主要功能是让外部设备直接与内存进行数据传输来增强系统的性能，有了DMA控制器，外设和内存能在不受CPU控制的条件下进行传输。</p>
 <h4 id="定时器、计数器"><a href="#定时器、计数器" class="headerlink" title="定时器、计数器"></a>定时器、计数器</h4><p>定时器按照一定的时间间隔发送中断请求信号。中断请求时Linux内核工作的脉搏，用于定时切换当前执行的任务和统计每个任务使用的系统时间资源量。</p>
 <h4 id="键盘控制器"><a href="#键盘控制器" class="headerlink" title="键盘控制器"></a>键盘控制器</h4><p>接受键盘输入请求。</p>
-<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="../disk-structure.png" alt></p>
+<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/disk-structure.png" alt></p>
 
       
     </div>
