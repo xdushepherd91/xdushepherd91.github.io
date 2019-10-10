@@ -15,7 +15,11 @@ CPU通过地址线，数据线和控制信号线组成的本地总线与系统�
 
 下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。
 
+<<<<<<< HEAD
 ![test](https://github.com/xdushepherd91/xdushepherd91.github.io/master/pc-structure.png)
+=======
+![test](https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png)
+>>>>>>> 204858388bd2a0cf1846cd47c101018e332719b8
 
 ### 现代pc
 
@@ -24,7 +28,11 @@ CPU通过地址线，数据线和控制信号线组成的本地总线与系统�
 1. 北桥。用于CPU、内存、视频接口，具有很高的传输速率。
 2. 南桥。用来管理低速、中速组件。
 
+<<<<<<< HEAD
 ![test](https://github.com/xdushepherd91/xdushepherd91.github.io/master/modern-pc-structure.png)
+=======
+![test](https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/modern-pc-structure.png)
+>>>>>>> 204858388bd2a0cf1846cd47c101018e332719b8
 
 ### io寻址方式和访问控制方式
 
@@ -71,11 +79,19 @@ CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常�
 
 在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。
 
+<<<<<<< HEAD
 ![](https://github.com/xdushepherd91/xdushepherd91.github.io/master/inter.png)
 
 当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。
 
 ![](https://github.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png)
+=======
+![](https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter.png)
+
+当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。
+
+![](https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter-table.png)
+>>>>>>> 204858388bd2a0cf1846cd47c101018e332719b8
 
 #### DMA控制器
 
@@ -95,7 +111,11 @@ DMA控制器的主要功能是让外部设备直接与内存进行数据传输�
 
 #### 软盘和硬盘控制器
 
+<<<<<<< HEAD
 ![](https://github.com/xdushepherd91/xdushepherd91.github.io/master/disk-structure.png)
+=======
+![](https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/disk-structure.png)
+>>>>>>> 204858388bd2a0cf1846cd47c101018e332719b8
 
 
 
