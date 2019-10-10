@@ -7,7 +7,7 @@ branches:
   only:
     - source-branch # build master branch only
 script:
-  - hexo clean
+  - git clone https://github.com/hexojs/hexo-theme-landscape themes/landscape
   - hexo generate # generate static files
 deploy:
   provider: pages
