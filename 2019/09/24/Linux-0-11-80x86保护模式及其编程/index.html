@@ -87,16 +87,16 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="80x86 系统寄存器和系统指令为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。 eflags 寄存器 内存管理寄存器处理">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png">
-<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png">
-<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/cr.png">
-<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/segment.png">
-<meta property="og:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/tss.png">
-<meta property="og:updated_time" content="2019-10-10T06:04:03.685Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/cr.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/segment.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/tss.png">
+<meta property="og:updated_time" content="2019-10-10T06:09:26.094Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux-0-11-80x86保护模式及其编程">
 <meta name="twitter:description" content="80x86 系统寄存器和系统指令为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。 eflags 寄存器 内存管理寄存器处理">
-<meta name="twitter:image" content="https://github.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png">
 
 
 
@@ -307,23 +307,23 @@
 
       
         <h2 id="80x86-系统寄存器和系统指令"><a href="#80x86-系统寄存器和系统指令" class="headerlink" title="80x86 系统寄存器和系统指令"></a>80x86 系统寄存器和系统指令</h2><p>为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，<br>EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、<br>含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。</p>
-<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png" alt></p>
+<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png" alt></p>
 <h3 id="内存管理寄存器"><a href="#内存管理寄存器" class="headerlink" title="内存管理寄存器"></a>内存管理寄存器</h3><p>处理器提供了4个内存管理寄存器，分别是GDTR、LDTR、IDTR和TR。用于指定分段内存管理所使用的系统表的基地址。</p>
 <p>上述4个寄存器都是段基地址寄存器，这些段含有分段机制的重要信息表。GDTR、LDTR、IDTR是用于存放描述符表的段。TR用于寻找一个特殊的任务状态段TSS(task state segment)。TSS段包含着当前执行任务的重要信息。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png" alt></p>
 <ol>
 <li>全局描述符表寄存器GDTR。32位基地址+16位表长度。LGDT和SGDT分别用于加载和保存GDTR的值。机器刚加电时候，基地址默认为0，长度值默认为0xFFFF。在保护模式初始化过程中必须给 GDTR加载一个新值。</li>
 <li>中断描述符表寄存器IDTR。与GDTR类似。</li>
 <li>局部描述符表寄存器LDTR。32位基地址+16位（段限长和描述符属性值）</li>
 <li>任务寄存器TR。</li>
 </ol>
-<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/cr.png" alt></p>
+<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/cr.png" alt></p>
 <h2 id="保护模式内存管理"><a href="#保护模式内存管理" class="headerlink" title="保护模式内存管理"></a>保护模式内存管理</h2><h3 id="内存寻址"><a href="#内存寻址" class="headerlink" title="内存寻址"></a>内存寻址</h3><p>80x86提供了6个存放段选择符的段寄存器：CS、DS、SS、ES、FS、GS。</p>
 <ol>
 <li>其中CS总是用于寻址代码段、而SS总是用于堆栈段。在任何时刻由CS寻址的段称为当前代码段。此时EIP寄存器中包含了当前代码段内下一条要执行的指令的段内偏移地址。因此要执行的指令地址可比表示为CS:[EIP]。</li>
 <li>由段寄存器SS寻址的段成为当前堆栈段。栈顶由ESP寄存器内容指定，当前堆栈顶处于地址SS:[ESP]。帧底地址为SS:[EBP]。</li>
 </ol>
-<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/segment.png" alt></p>
+<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/segment.png" alt></p>
 <h4 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h4><p>段选择符、段描述符表、段描述符、段基地址、偏移量</p>
 <h4 id="分页机制"><a href="#分页机制" class="headerlink" title="分页机制"></a>分页机制</h4><p>略</p>
 <h4 id="保护"><a href="#保护" class="headerlink" title="保护"></a>保护</h4><ol>
@@ -351,7 +351,7 @@
 <p>任务切换和过程调用类似，但任务切换会保存更多的寄存器信息。这些信息被保存在TSS中。</p>
 <h4 id="任务的结构和状态"><a href="#任务的结构和状态" class="headerlink" title="任务的结构和状态"></a>任务的结构和状态</h4><p>任务有由任务执行空间和任务状态段组成。任务执行空间包括代码段、堆栈段和一个或者多个数据段。TSS指定了构成任务执行空间的各个段。</p>
 <p>一个任务用指向其TSS的段选择符来指定。当一个任务被加载进处理器中执行时，那么该任务的段选择符、基地址、段限长以及TSS段描述符都会被加载到任务寄存器TR中。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/tss.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/tss.png" alt></p>
 
       
     </div>
