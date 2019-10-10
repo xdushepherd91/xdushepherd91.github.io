@@ -1,7 +1,12 @@
 ---
 title: Linux-0.11-微型计算机组成结构笔记
 date: 2019-09-24 10:22:10
-tags:
+tags: 
+- linux
+- 底层
+- 汇编
+categories: 
+- Linux 内核
 ---
 
 ### 概览

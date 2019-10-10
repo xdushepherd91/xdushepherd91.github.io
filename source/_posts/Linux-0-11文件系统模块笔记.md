@@ -1,7 +1,12 @@
 ---
 title: Linux-0-11文件系统模块笔记
 date: 2019-09-26 13:43:20
-tags:
+tags: 
+- linux
+- 底层
+- 汇编
+categories: 
+- Linux 内核
 ---
 
 

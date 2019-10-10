@@ -1,7 +1,11 @@
 ---
 title: jdk1.8--ArrayDeque源代码阅读笔记
 date: 2019-09-09 22:26:40
-tags:
+tags: 
+- java
+- jdk
+categories: 
+- jdk源代码阅读笔记
 ---
 
 ### 类注释总结
