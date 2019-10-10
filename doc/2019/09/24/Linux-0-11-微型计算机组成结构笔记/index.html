@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Linux-0.11-微型计算机组成结构笔记 | 拾忆</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，  地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。 数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。 控制总线，用于指挥执行的具体读写操作。  在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。 下图中的控制器都集成">
+<meta name="keywords" content="java，linux，life">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux-0.11-微型计算机组成结构笔记">
+<meta property="og:url" content="http://yoursite.com/2019/09/24/Linux-0-11-微型计算机组成结构笔记/index.html">
+<meta property="og:site_name" content="拾忆">
+<meta property="og:description" content="概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，  地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。 数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。 控制总线，用于指挥执行的具体读写操作。  在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。 下图中的控制器都集成">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/pc-structure.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/modern-pc-structure.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/inter.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/inter-table.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/disk-structure.png">
+<meta property="og:updated_time" content="2019-09-24T05:55:06.618Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux-0.11-微型计算机组成结构笔记">
+<meta name="twitter:description" content="概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，  地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。 数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。 控制总线，用于指挥执行的具体读写操作。  在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。 下图中的控制器都集成">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/24/pc-structure.png">
+  
+    <link rel="alternate" href="/atom.xml" title="拾忆" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">拾忆</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">生活与技术</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Linux-0-11-微型计算机组成结构笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/24/Linux-0-11-微型计算机组成结构笔记/" class="article-date">
+  <time datetime="2019-09-24T02:22:10.000Z" itemprop="datePublished">2019-09-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux-0.11-微型计算机组成结构笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p>CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，</p>
+<ol>
+<li>地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。</li>
+<li>数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。</li>
+<li>控制总线，用于指挥执行的具体读写操作。</li>
+</ol>
+<p>在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。</p>
+<p>下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。</p>
+<p><img src="../pc-structure.png" alt="test"></p>
+<h3 id="现代pc"><a href="#现代pc" class="headerlink" title="现代pc"></a>现代pc</h3><p>现代pc的主板主要使用2个超大规模芯片构成的芯片组或者芯片集组成：北桥芯片和南桥芯片。</p>
+<ol>
+<li>北桥。用于CPU、内存、视频接口，具有很高的传输速率。</li>
+<li>南桥。用来管理低速、中速组件。</li>
+</ol>
+<p><img src="../modern-pc-structure.png" alt="test"></p>
+<h3 id="io寻址方式和访问控制方式"><a href="#io寻址方式和访问控制方式" class="headerlink" title="io寻址方式和访问控制方式"></a>io寻址方式和访问控制方式</h3><p>CPU为了访问io接口控制器或者控制卡上的数据和状态信息，需要首先指定他们的地址。这种地址就成为IO端口地址或者简称端口。端口地址的设置方法有两种：统一编址和独立编址。</p>
+<ol>
+<li>统一编址。将IO控制器中的端口地址归入存储器寻址空间范围内。</li>
+<li>独立编址。单独对待IO控制器和控制卡的地址，使用专门的IO指令来访问端口</li>
+</ol>
+<p>IBM兼容pc主要使用独立编址方式。采用独立的IO地址空间对控制设备的寄存器进行寻址和访问。</p>
+<p>IBM兼容pc也部分地使用了统一编址的方式。例如，CGA显示卡显示内存的地址就直接占用存储器地址的0xB800-0xBC00范围，若要让一个字符显示在屏幕上，可以直接使用内存操作指令往这个内存区域执行写操作。</p>
+<h3 id="接口访问控制"><a href="#接口访问控制" class="headerlink" title="接口访问控制"></a>接口访问控制</h3><p>pc机的io接口数据访问控制方式一般可采用：</p>
+<ol>
+<li>程序循环查询方式。浪费CPU时间。</li>
+<li>中断处理方式。需要中断控制器支持。</li>
+<li>DMA传输方式。需要DMA控制器支持。</li>
+</ol>
+<p>目前Linux操作系统主要使用了后两种方式。</p>
+<h3 id="主存储器、BIOS和CMOS存储器"><a href="#主存储器、BIOS和CMOS存储器" class="headerlink" title="主存储器、BIOS和CMOS存储器"></a>主存储器、BIOS和CMOS存储器</h3><h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><p>32为cpu的寻址范围已经达到了4GB，而ROM中的BIOS一直处于CPU能寻址的内存最高端位置处。</p>
+<h4 id="基本输出输出程序BIOS"><a href="#基本输出输出程序BIOS" class="headerlink" title="基本输出输出程序BIOS"></a>基本输出输出程序BIOS</h4><p>存放在ROM中的系统BIOS程序主要用于计算机开机时执行的系统各部分自检，建立起操作系统需要使用的各种配置表，例如中断向量表，硬盘参数表等。并把处理器和系统其余部分初始化到一个已知状态，为操作系统提供硬件设备接口服务。</p>
+<p>在机器上电之后，CPU会自动把代码段寄存器cs设置为0xF000，其段基地址则被设置为0xFFFFFFF0，段长度设置为64KB。而IP则被设置为0xFFF0，因此此时CPU代码指针指向0xFFFFFFF0处，即4G空间的最后64K的最后16字节处。这正是系统ROM BIOS程序的存放位置。 并且BIOS会在这里存放一条jmp指令，使得cpu跳转到最后64K范围内的某一条指令开始执行。</p>
+<h4 id="CMOS存储器"><a href="#CMOS存储器" class="headerlink" title="CMOS存储器"></a>CMOS存储器</h4><p>CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常和实时时钟芯片集成，使用io指令来访问。</p>
+<h3 id="控制器和控制卡"><a href="#控制器和控制卡" class="headerlink" title="控制器和控制卡"></a>控制器和控制卡</h3><h4 id="中断控制器"><a href="#中断控制器" class="headerlink" title="中断控制器"></a>中断控制器</h4><p>80386中的中断控制器用于实现io设备的中断控制存取方式，并且能为15个设备提供独立的中断控制功能。</p>
+<p>在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。</p>
+<p><img src="../inter.png" alt></p>
+<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
+<p><img src="../inter-table.png" alt></p>
+<h4 id="DMA控制器"><a href="#DMA控制器" class="headerlink" title="DMA控制器"></a>DMA控制器</h4><p>DMA控制器的主要功能是让外部设备直接与内存进行数据传输来增强系统的性能，有了DMA控制器，外设和内存能在不受CPU控制的条件下进行传输。</p>
+<h4 id="定时器、计数器"><a href="#定时器、计数器" class="headerlink" title="定时器、计数器"></a>定时器、计数器</h4><p>定时器按照一定的时间间隔发送中断请求信号。中断请求时Linux内核工作的脉搏，用于定时切换当前执行的任务和统计每个任务使用的系统时间资源量。</p>
+<h4 id="键盘控制器"><a href="#键盘控制器" class="headerlink" title="键盘控制器"></a>键盘控制器</h4><p>接受键盘输入请求。</p>
+<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="../disk-structure.png" alt></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/09/24/Linux-0-11-微型计算机组成结构笔记/" data-id="ck15uh3n80007ugttb0he9sbs" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/09/24/Linux-0-11-内核编程语言和环境笔记/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Linux-0-11-内核编程语言和环境笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/24/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/09/26/Linux-0-11文件系统模块笔记/">Linux-0-11文件系统模块笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/25/汇编语言部分语法记录/">汇编语言部分语法记录</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/24/Linux-0-11-80x86保护模式及其编程/">Linux-0-11-80x86保护模式及其编程</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/24/Linux-0-11-内核编程语言和环境笔记/">Linux-0-11-内核编程语言和环境笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/24/Linux-0-11-微型计算机组成结构笔记/">Linux-0.11-微型计算机组成结构笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 王千一<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
