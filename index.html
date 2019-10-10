@@ -264,7 +264,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-10T14:13:35+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-10T14:16:33+08:00">
                 2019-10-10
               </time>
             
@@ -968,7 +968,7 @@
 <ol>
 <li>栈帧结构和控制转移权方式。大多数CPU上的程序都是使用栈来支持函数调用操作的。栈被用来存储函数参数、存储返回信息、临时保存寄存器原有值以及存储局部数据。单个函数调用操作所使用的栈部分被称位栈帧机构。如下：</li>
 </ol>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/stack-frame.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/stack-frame.png" alt></p>
 <p>栈帧的两端由两个指针来指定。寄存器ebp通常用作帧指针，而esp则用作栈指针。栈指针esp会随着数据的入栈和出栈而移动，因此函数中对大部分数据的访问都基于帧指针ebp进行。</p>
 <p>对于函数A调用函数B的情况，传递给B的参数包含在A的栈帧中。当A调用B时，函数A的返回地址（调用结束后继续执行的指令地址）被压入栈中，栈中该位置也明确指明了A栈帧的结束处。而B的栈帧则从随后的栈部分开始，即图中保存帧指针（ebp）的地方开始。再随后则用于存放任何保存的j寄存器的值以及函数的临时之。</p>
 <p>栈是往低地址方向扩展的。而esp指向当前栈顶处的元素。通过使用push和pop指令我们可以将数据压入栈中或从栈中弹出。</p>
