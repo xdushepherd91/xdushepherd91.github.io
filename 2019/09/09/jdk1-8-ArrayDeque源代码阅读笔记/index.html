@@ -14,6 +14,13 @@
 
 
 
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
 
 
 
@@ -87,7 +94,7 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：  没有容量限制。 非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。 不接受null数据。 作为一个栈比Stack类要快。 作为队列比LinkedList类要快。  同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在it">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-10T07:37:57.342Z">
+<meta property="og:updated_time" content="2019-10-10T07:58:15.552Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jdk1.8--ArrayDeque源代码阅读笔记">
 <meta name="twitter:description" content="类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：  没有容量限制。 非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。 不接受null数据。 作为一个栈比Stack类要快。 作为队列比LinkedList类要快。  同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在it">
@@ -100,7 +107,7 @@
     root: '/',
     scheme: 'Muse',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -145,7 +152,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-right page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -650,10 +657,9 @@
   
 
 
+  
 
 
-  
-  
 
 
 
@@ -695,12 +701,7 @@
 
   
   
-    <script type="text/javascript" src="/lib/three/three.min.js"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
   
 
 
