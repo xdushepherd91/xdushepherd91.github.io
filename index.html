@@ -264,7 +264,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-10T13:54:18+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-10T14:02:28+08:00">
                 2019-10-10
               </time>
             
@@ -749,23 +749,23 @@
         
           
             <h2 id="80x86-系统寄存器和系统指令"><a href="#80x86-系统寄存器和系统指令" class="headerlink" title="80x86 系统寄存器和系统指令"></a>80x86 系统寄存器和系统指令</h2><p>为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，<br>EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、<br>含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。</p>
-<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/elfags.png" alt></p>
+<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png" alt></p>
 <h3 id="内存管理寄存器"><a href="#内存管理寄存器" class="headerlink" title="内存管理寄存器"></a>内存管理寄存器</h3><p>处理器提供了4个内存管理寄存器，分别是GDTR、LDTR、IDTR和TR。用于指定分段内存管理所使用的系统表的基地址。</p>
 <p>上述4个寄存器都是段基地址寄存器，这些段含有分段机制的重要信息表。GDTR、LDTR、IDTR是用于存放描述符表的段。TR用于寻找一个特殊的任务状态段TSS(task state segment)。TSS段包含着当前执行任务的重要信息。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/sys-mm-register.png" alt></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png" alt></p>
 <ol>
 <li>全局描述符表寄存器GDTR。32位基地址+16位表长度。LGDT和SGDT分别用于加载和保存GDTR的值。机器刚加电时候，基地址默认为0，长度值默认为0xFFFF。在保护模式初始化过程中必须给 GDTR加载一个新值。</li>
 <li>中断描述符表寄存器IDTR。与GDTR类似。</li>
 <li>局部描述符表寄存器LDTR。32位基地址+16位（段限长和描述符属性值）</li>
 <li>任务寄存器TR。</li>
 </ol>
-<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/cr.png" alt></p>
+<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/cr.png" alt></p>
 <h2 id="保护模式内存管理"><a href="#保护模式内存管理" class="headerlink" title="保护模式内存管理"></a>保护模式内存管理</h2><h3 id="内存寻址"><a href="#内存寻址" class="headerlink" title="内存寻址"></a>内存寻址</h3><p>80x86提供了6个存放段选择符的段寄存器：CS、DS、SS、ES、FS、GS。</p>
 <ol>
 <li>其中CS总是用于寻址代码段、而SS总是用于堆栈段。在任何时刻由CS寻址的段称为当前代码段。此时EIP寄存器中包含了当前代码段内下一条要执行的指令的段内偏移地址。因此要执行的指令地址可比表示为CS:[EIP]。</li>
 <li>由段寄存器SS寻址的段成为当前堆栈段。栈顶由ESP寄存器内容指定，当前堆栈顶处于地址SS:[ESP]。帧底地址为SS:[EBP]。</li>
 </ol>
-<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/segment.png" alt></p>
+<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/segment.png" alt></p>
 <h4 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h4><p>段选择符、段描述符表、段描述符、段基地址、偏移量</p>
 <h4 id="分页机制"><a href="#分页机制" class="headerlink" title="分页机制"></a>分页机制</h4><p>略</p>
 <h4 id="保护"><a href="#保护" class="headerlink" title="保护"></a>保护</h4><ol>
@@ -793,7 +793,7 @@
 <p>任务切换和过程调用类似，但任务切换会保存更多的寄存器信息。这些信息被保存在TSS中。</p>
 <h4 id="任务的结构和状态"><a href="#任务的结构和状态" class="headerlink" title="任务的结构和状态"></a>任务的结构和状态</h4><p>任务有由任务执行空间和任务状态段组成。任务执行空间包括代码段、堆栈段和一个或者多个数据段。TSS指定了构成任务执行空间的各个段。</p>
 <p>一个任务用指向其TSS的段选择符来指定。当一个任务被加载进处理器中执行时，那么该任务的段选择符、基地址、段限长以及TSS段描述符都会被加载到任务寄存器TR中。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/tss.png" alt></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/tss.png" alt></p>
 
           
         
@@ -968,7 +968,7 @@
 <ol>
 <li>栈帧结构和控制转移权方式。大多数CPU上的程序都是使用栈来支持函数调用操作的。栈被用来存储函数参数、存储返回信息、临时保存寄存器原有值以及存储局部数据。单个函数调用操作所使用的栈部分被称位栈帧机构。如下：</li>
 </ol>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/stack-frame.png" alt></p>
+<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/stack-frame.png" alt></p>
 <p>栈帧的两端由两个指针来指定。寄存器ebp通常用作帧指针，而esp则用作栈指针。栈指针esp会随着数据的入栈和出栈而移动，因此函数中对大部分数据的访问都基于帧指针ebp进行。</p>
 <p>对于函数A调用函数B的情况，传递给B的参数包含在A的栈帧中。当A调用B时，函数A的返回地址（调用结束后继续执行的指令地址）被压入栈中，栈中该位置也明确指明了A栈帧的结束处。而B的栈帧则从随后的栈部分开始，即图中保存帧指针（ebp）的地方开始。再随后则用于存放任何保存的j寄存器的值以及函数的临时之。</p>
 <p>栈是往低地址方向扩展的。而esp指向当前栈顶处的元素。通过使用push和pop指令我们可以将数据压入栈中或从栈中弹出。</p>
@@ -1108,13 +1108,45 @@
 </ol>
 <p>在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。</p>
 <p>下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png" alt="test"></p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+<h1 id><a href="#" class="headerlink" title></a><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/pc-structure.png" alt="test"></h1><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/pc-structure.png" alt="test"></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>204858388bd2a0cf1846cd47c101018e332719b8</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <h3 id="现代pc"><a href="#现代pc" class="headerlink" title="现代pc"></a>现代pc</h3><p>现代pc的主板主要使用2个超大规模芯片构成的芯片组或者芯片集组成：北桥芯片和南桥芯片。</p>
 <ol>
 <li>北桥。用于CPU、内存、视频接口，具有很高的传输速率。</li>
 <li>南桥。用来管理低速、中速组件。</li>
 </ol>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/modern-pc-structure.png" alt="test"></p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+<h1 id="-1"><a href="#-1" class="headerlink" title></a><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/modern-pc-structure.png" alt="test"></h1><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/modern-pc-structure.png" alt="test"></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>204858388bd2a0cf1846cd47c101018e332719b8</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <h3 id="io寻址方式和访问控制方式"><a href="#io寻址方式和访问控制方式" class="headerlink" title="io寻址方式和访问控制方式"></a>io寻址方式和访问控制方式</h3><p>CPU为了访问io接口控制器或者控制卡上的数据和状态信息，需要首先指定他们的地址。这种地址就成为IO端口地址或者简称端口。端口地址的设置方法有两种：统一编址和独立编址。</p>
 <ol>
 <li>统一编址。将IO控制器中的端口地址归入存储器寻址空间范围内。</li>
@@ -1135,13 +1167,46 @@
 <h4 id="CMOS存储器"><a href="#CMOS存储器" class="headerlink" title="CMOS存储器"></a>CMOS存储器</h4><p>CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常和实时时钟芯片集成，使用io指令来访问。</p>
 <h3 id="控制器和控制卡"><a href="#控制器和控制卡" class="headerlink" title="控制器和控制卡"></a>控制器和控制卡</h3><h4 id="中断控制器"><a href="#中断控制器" class="headerlink" title="中断控制器"></a>中断控制器</h4><p>80386中的中断控制器用于实现io设备的中断控制存取方式，并且能为15个设备提供独立的中断控制功能。</p>
 <p>在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。</p>
-<p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter.png" alt></p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD<br><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/inter.png" alt></p>
+<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
+<h1 id="-2"><a href="#-2" class="headerlink" title></a><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png" alt></h1><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter.png" alt></p>
 <p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
 <p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/inter-table.png" alt></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>204858388bd2a0cf1846cd47c101018e332719b8</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <h4 id="DMA控制器"><a href="#DMA控制器" class="headerlink" title="DMA控制器"></a>DMA控制器</h4><p>DMA控制器的主要功能是让外部设备直接与内存进行数据传输来增强系统的性能，有了DMA控制器，外设和内存能在不受CPU控制的条件下进行传输。</p>
 <h4 id="定时器、计数器"><a href="#定时器、计数器" class="headerlink" title="定时器、计数器"></a>定时器、计数器</h4><p>定时器按照一定的时间间隔发送中断请求信号。中断请求时Linux内核工作的脉搏，用于定时切换当前执行的任务和统计每个任务使用的系统时间资源量。</p>
 <h4 id="键盘控制器"><a href="#键盘控制器" class="headerlink" title="键盘控制器"></a>键盘控制器</h4><p>接受键盘输入请求。</p>
-<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/disk-structure.png" alt></p>
+<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+<h1 id="-3"><a href="#-3" class="headerlink" title></a><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/master/disk-structure.png" alt></h1><p><img src="https://github.com/xdushepherd91/xdushepherd91.github.io/blob/master/disk-structure.png" alt></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>204858388bd2a0cf1846cd47c101018e332719b8</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 
           
         
