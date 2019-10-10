@@ -111,7 +111,7 @@ GNU对C语言的另一个扩充时允许我们把一些变量值放到CPU寄存�
 
 1. 栈帧结构和控制转移权方式。大多数CPU上的程序都是使用栈来支持函数调用操作的。栈被用来存储函数参数、存储返回信息、临时保存寄存器原有值以及存储局部数据。单个函数调用操作所使用的栈部分被称位栈帧机构。如下：
 
-![](https://github.com/xdushepherd91/xdushepherd91.github.io/master/stack-frame.png)
+![](https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/stack-frame.png)
 
 
 栈帧的两端由两个指针来指定。寄存器ebp通常用作帧指针，而esp则用作栈指针。栈指针esp会随着数据的入栈和出栈而移动，因此函数中对大部分数据的访问都基于帧指针ebp进行。
