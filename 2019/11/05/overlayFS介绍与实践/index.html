@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="linux,底层,汇编,">
+  <meta name="keywords" content="linux,filesystem,docker,">
 
 
 
@@ -86,18 +86,24 @@
 
 
 
-<meta name="description" content="概述在Linux内核中，文件系统部分大致可以分为四个部分来看：  高速缓冲区。该部分内容集中在bufffer.c中实现。 文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。 有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。 文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。  高速">
-<meta name="keywords" content="linux,底层,汇编">
+<meta name="description" content="概述在docker底层原理的学习过程中，接触到了UnionFS的概念。 UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。这样我们就把A文件夹">
+<meta name="keywords" content="linux,filesystem,docker">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux-0-11文件系统模块笔记">
-<meta property="og:url" content="http://yoursite.com/2019/09/26/Linux-0-11文件系统模块笔记/index.html">
+<meta property="og:title" content="docker底层原理————overlayFS介绍与实践">
+<meta property="og:url" content="http://yoursite.com/2019/11/05/overlayFS介绍与实践/index.html">
 <meta property="og:site_name" content="拾忆">
-<meta property="og:description" content="概述在Linux内核中，文件系统部分大致可以分为四个部分来看：  高速缓冲区。该部分内容集中在bufffer.c中实现。 文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。 有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。 文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。  高速">
+<meta property="og:description" content="概述在docker底层原理的学习过程中，接触到了UnionFS的概念。 UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。这样我们就把A文件夹">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/overlay/1.png">
+<meta property="og:image" content="http://yoursite.com/images/overlay/2.png">
+<meta property="og:image" content="http://yoursite.com/images/overlay/3.png">
+<meta property="og:image" content="http://yoursite.com/images/overlay/4.png">
+<meta property="og:image" content="http://yoursite.com/images/overlay/5.png">
 <meta property="og:updated_time" content="2019-11-05T07:54:59.073Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux-0-11文件系统模块笔记">
-<meta name="twitter:description" content="概述在Linux内核中，文件系统部分大致可以分为四个部分来看：  高速缓冲区。该部分内容集中在bufffer.c中实现。 文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。 有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。 文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。  高速">
+<meta name="twitter:title" content="docker底层原理————overlayFS介绍与实践">
+<meta name="twitter:description" content="概述在docker底层原理的学习过程中，接触到了UnionFS的概念。 UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。这样我们就把A文件夹">
+<meta name="twitter:image" content="http://yoursite.com/images/overlay/1.png">
 
 
 
@@ -127,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/09/26/Linux-0-11文件系统模块笔记/">
+  <link rel="canonical" href="http://yoursite.com/2019/11/05/overlayFS介绍与实践/">
 
 
 
 
 
-  <title>Linux-0-11文件系统模块笔记 | 拾忆</title>
+  <title>docker底层原理————overlayFS介绍与实践 | 拾忆</title>
   
 
 
@@ -270,7 +276,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/26/Linux-0-11文件系统模块笔记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/overlayFS介绍与实践/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王千一">
@@ -287,7 +293,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Linux-0-11文件系统模块笔记</h1>
+          <h1 class="post-title" itemprop="name headline">docker底层原理————overlayFS介绍与实践</h1>
         
 
         <div class="post-meta">
@@ -299,8 +305,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T05:43:20+00:00">
-                2019-09-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-05T06:29:17+00:00">
+                2019-11-05
               </time>
             
 
@@ -322,8 +328,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux 内核</span>
+                  <a href="/categories/filesystem/" itemprop="url" rel="index">
+                    <span itemprop="name">filesystem</span>
                   </a>
                 </span>
 
@@ -359,61 +365,29 @@
       
 
       
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在Linux内核中，文件系统部分大致可以分为四个部分来看：</p>
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在docker底层原理的学习过程中，接触到了UnionFS的概念。</p>
+<p>UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：<br>假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。<br>我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。<br>这样我们就把A文件夹和B文件夹联合起来了。</p>
+<p>当然，在实际的实现过程中，概念会更多。</p>
+<p>UnionFS的实现是比较多的，目前docker中使用的UnionFS的实现是overlay2，而我在网上找到的相关资料并不多，<br>处于好奇，专门对其进行了一些实际操作，并记录下来。</p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>overlayFS允许一个可读写的目录覆盖在多个只读的目录之上，这些目录就构成了多个层(layer)，而当我们在联合起来的目录中工作的时候，<br>我们所有的写入操作最终都进入了最上层的读写层目录中，这一点我后续会通过命令展示。</p>
+<p>overlayFS与其他的unionFS的实现最终要的不同在于，当一个文件打开之后，所有的操作都直接和底层的文件系统打交道，这样可以保证操作的<br>性能。</p>
+<p>在Linux kernel 3.18之后，overlayFS已经集成到内核中去了。我们在该版本之后的Linux内核中，不需要安装，就可以开始使用overlayFS了。</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="可读写的联合文件系统"><a href="#可读写的联合文件系统" class="headerlink" title="可读写的联合文件系统"></a>可读写的联合文件系统</h4><p>我们使用如下命令来挂在一个overlay文件系统</p>
+<p>mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged</p>
+<p>其中，</p>
 <ol>
-<li>高速缓冲区。该部分内容集中在bufffer.c中实现。</li>
-<li>文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。</li>
-<li>有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。</li>
-<li>文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。</li>
+<li>lowerdir的值可以是一些的文件夹列表，使用:分开,这些事只读层。</li>
+<li>merged文件夹是最终联合起来的文件系统，我们可以在merged文件夹中访问所有lowerdir和upperdir中的内容</li>
+<li>在merged文件夹所做的所有修改，最终都会存储到upperdir目录中</li>
+<li>workdir指定的目录需要和upperdir位于同一目录中</li>
+<li>文件的覆盖顺序，upperdir目录拥有最高覆盖权限，lowerdir按照mount时从左到右的顺序，权重依次降低，左边的覆盖右边的同名文件或者文件夹。<br>注意，覆盖仅仅在mount时按照此顺序，一旦mount成功后，按照文件出现的早晚覆盖，出现早的会屏蔽出现晚的同名文件。除非修改是在merged目录中进行。</li>
 </ol>
-<h3 id="高速缓冲区"><a href="#高速缓冲区" class="headerlink" title="高速缓冲区"></a>高速缓冲区</h3><p>高速缓冲区是文件系统访问块设备中数据的必经要道。</p>
-<p>高速缓冲区由缓冲区头和缓冲区块构成。</p>
-<p>其物理位置位于内核代码和主内存之间。高速缓冲区块中存放着最近被使用过的各个块设备中的数据块。</p>
-<p>当需要从块设备读取数据时，缓冲区管理程序首先在缓冲区中查找，即检索缓冲区头。如果已经存在，直接读取即可。</p>
-<p>写入的时候，也是先写入到高速缓冲区中，至于什么时候真正的写入数据，则是要通过设备数据同步是现代的。</p>
-<p>Linux内核实现高速缓冲区的程序是buffer.c。文件系统中其他程序通过指定需要访问的设备号和数据逻辑块号来调用它的块读写函数。</p>
-<ol>
-<li>块读取函数bread()</li>
-<li>块提前预读函数breada()</li>
-<li>页读取函数bread_page()</li>
-</ol>
-<h3 id="文件系统底层函数"><a href="#文件系统底层函数" class="headerlink" title="文件系统底层函数"></a>文件系统底层函数</h3><p>文件系统底层处理函数包含以下5个文件：</p>
-<ol>
-<li>bitmap.c。包括了inode位图和逻辑块位图进行释放和占用处理函数。分别有<ol>
-<li>free_inode和new_inode。</li>
-<li>free_block和new_block。</li>
-</ol>
-</li>
-<li>truncate.c。该程序包括了将数据文件长度截断为0的函数truncate()。将inode指定设备的文件长度设置为0，并释放文件数据占用的设备逻辑块。</li>
-<li>inode.c。程序包括分配inode函数iget()和放回对内存inode存取函数iput()以及根据inode节点信息取文件数据块在设备上对应的逻辑块号函数bmap()。</li>
-<li>namei.c。程序主要包括函数namei()。该函数使用iget(),iput()和bmap()将给定文件路径名映射到其inode上。</li>
-<li>super.c。专门用于处理文件系统超级块，包括了函数get_super(),put_super()和free_super()等。</li>
-</ol>
-<h3 id="文件中数据的访问"><a href="#文件中数据的访问" class="headerlink" title="文件中数据的访问"></a>文件中数据的访问</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>block_dev.c</li>
-<li>file_dev.c</li>
-<li>char_dev.c</li>
-<li>pipe.c</li>
-<li>read_write.c</li>
-</ol>
-<h3 id="文件和目录管理的系统调用"><a href="#文件和目录管理的系统调用" class="headerlink" title="文件和目录管理的系统调用"></a>文件和目录管理的系统调用</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>open.c。该文件用于实现与文件操作相关的系统调用。主要有文件的创建，打开和关闭，文件属性修改，文件访问权限修改等等</li>
-<li>exec.c。实现对二进制可执行文件和shell脚本文件的加载和执行。主要函数do_execve()。</li>
-<li>fcntl.c。实现了系统调用fcntl()和dup()等。</li>
-<li>ioctl.c。实现了输入输出控制系统调用ioctl()。主要调用tty_ioctl()函数，对中断的IO进行控制。</li>
-<li>stat.c。 实现了文件状态信息系统调用stat()和fstat()。stat是利用文件名提取信息，而fstat是利用文件描述符提取信息</li>
-</ol>
-<h3 id="待整理"><a href="#待整理" class="headerlink" title="待整理"></a>待整理</h3><p>Linux0.11中，最多可以加载8个文件系统，因为其超级块数组的大小为8.</p>
-<p>超级块表在super.c的mount_root()函数中被初始化，</p>
-<p>read_super()会为新加载的文件系统在超级块表中设置一个超级块项</p>
-<p>put_super()函数会释放超级块表中的超级块项目</p>
-<p>逻辑块位图用于描述每个数据块的实用情况，除了第一个比特位外，逻辑块位图的每个比特位<br>依次代表数据区中的一个逻辑块。因此，逻辑块位图的比特位1代表了盘上数据区中第一个数据块，<br>而不是第一个磁盘块。当一个数据块被使用的时候，逻辑块位图中相应的比特位被置位，由于所有<br>磁盘数据块都被占用的时候，查找空闲数据块的函数返回0值，因此逻辑块位图的第一个比特位闲置<br>不用，并且在创建文件系统的时候会预先将其设置为1.</p>
-<p>从逻辑块的结构可以看出，逻辑块位图最多使用8个缓冲区块，每个缓冲区块的大小事1024字节，每个比特<br>表示了一个盘块，因此一个缓冲区块可以代表8192个盘块，8个缓冲区块总共可以表示65536个盘块，<br>一个盘块的大小事1K,因此Linux0.11中所能支持的最大设备容量是64MB。</p>
-<p>inode位图用于说明inode是否被使用，同样是每个比特位代表一个inode。对于1k大小的盘块来讲，一个盘块<br>就可以表示8192个inode的使用情况，具体情况与逻辑块类似。</p>
-<p>盘上的inode存放着文件系统中文件或者目录名的索引节点，每个文件或者目录名都有一个inode。每个inode结构<br>存放着对应文件的相关信息，文件的uid，gid，文件长度，访问修改时间，文件数据块在盘上的位置等，整个结构占用<br>32个字节。</p>
-<p>文件系统目录项结构。定义在include/linux/fs.h中，在文件系统的一个目录中，其中所有文件名信息对应的目录项存储在<br>该目录文件名文件的数据块中。例如，目录名root/下所有文件名的目录项就保存在root/目录名文件的数据块中。而文件系统<br>根目录下的所有文件名信息则保存在指定inode的数据块中。其数据结构称为dir_entry。<br>每个目录项保存一个长度为14字节的文件名和该文件名对应的2字节的inode号码。因此一个逻辑磁盘块可以保存1024/16=64个目录项。<br>有关文件的其他信息则被保存在该inode号指定的inode结构之中。</p>
+<h4 id="开机自动挂载"><a href="#开机自动挂载" class="headerlink" title="开机自动挂载"></a>开机自动挂载</h4><p>在/etc/fstab中实现自动挂载的格式如下，本人暂未实践</p>
+<p>overlay /merged overlay noauto,x-systemd.automount,lowerdir=/lower,upperdir=/upper,workdir=/work 0 0</p>
+<h4 id="只读联合文件系统"><a href="#只读联合文件系统" class="headerlink" title="只读联合文件系统"></a>只读联合文件系统</h4><p>mount -t overlay overlay -o lowerdir=/lower1:/lower2 /merged</p>
+<h3 id="overlayFS相关演示"><a href="#overlayFS相关演示" class="headerlink" title="overlayFS相关演示"></a>overlayFS相关演示</h3><p><img src="/images/overlay/1.png" alt><br><img src="/images/overlay/2.png" alt><br><img src="/images/overlay/3.png" alt><br><img src="/images/overlay/4.png" alt><br><img src="/images/overlay/5.png" alt></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>overlayFS可以在多种应用场合中使用，我们这里关注在docker中的使用方式。<br>在docker中个，多个镜像可以看做是多个lowerdir，只读层，当我们启动一个容器的时候，使用overlayFS将多个镜像<br>联合挂载到一个目录，并使得容器中可以对目录中的文件进行读写操作，但读写操作仅仅会影响到当前容器的upperdir和<br>当前目录，并不会影响到镜像中的数据。</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.jianshu.com/p/47c4a06a84a4" target="_blank" rel="noopener">Docker技术三大要点：cgroup, namespace和unionFS的理解</a><br><a href="https://wiki.archlinux.org/index.php/Overlay_filesystem" target="_blank" rel="noopener">Overlay filesystem</a><br><a href="https://blog.csdn.net/songcf_faith/article/details/82787946" target="_blank" rel="noopener">Docker技术原理之Linux UnionFS（容器镜像）</a></p>
 
       
     </div>
@@ -433,9 +407,9 @@
           
             <a href="/tags/linux/" rel="tag"># linux</a>
           
-            <a href="/tags/底层/" rel="tag"># 底层</a>
+            <a href="/tags/filesystem/" rel="tag"># filesystem</a>
           
-            <a href="/tags/汇编/" rel="tag"># 汇编</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
         </div>
       
@@ -448,8 +422,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/25/汇编语言部分语法记录/" rel="next" title="汇编语言部分语法记录">
-                <i class="fa fa-chevron-left"></i> 汇编语言部分语法记录
+              <a href="/2019/10/15/Linux0-11内核中fork系统调用实现代码分析/" rel="next" title="Linux0.11内核中fork系统调用实现代码分析">
+                <i class="fa fa-chevron-left"></i> Linux0.11内核中fork系统调用实现代码分析
               </a>
             
           </div>
@@ -457,10 +431,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/10/hexo博客搭建过程中的问题解决/" rel="prev" title="hexo博客搭建过程中的问题解决">
-                hexo博客搭建过程中的问题解决 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -592,7 +562,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高速缓冲区"><span class="nav-number">2.</span> <span class="nav-text">高速缓冲区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统底层函数"><span class="nav-number">3.</span> <span class="nav-text">文件系统底层函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件中数据的访问"><span class="nav-number">4.</span> <span class="nav-text">文件中数据的访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件和目录管理的系统调用"><span class="nav-number">5.</span> <span class="nav-text">文件和目录管理的系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#待整理"><span class="nav-number">6.</span> <span class="nav-text">待整理</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可读写的联合文件系统"><span class="nav-number">3.1.</span> <span class="nav-text">可读写的联合文件系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开机自动挂载"><span class="nav-number">3.2.</span> <span class="nav-text">开机自动挂载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#只读联合文件系统"><span class="nav-number">3.3.</span> <span class="nav-text">只读联合文件系统</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overlayFS相关演示"><span class="nav-number">4.</span> <span class="nav-text">overlayFS相关演示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
 
           </div>

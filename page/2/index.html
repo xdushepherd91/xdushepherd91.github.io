@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="java,jdk,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -86,18 +86,17 @@
 
 
 
-<meta name="description" content="类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：  没有容量限制。 非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。 不接受null数据。 作为一个栈比Stack类要快。 作为队列比LinkedList类要快。  同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在it">
-<meta name="keywords" content="java,jdk">
-<meta property="og:type" content="article">
-<meta property="og:title" content="jdk1.8--ArrayDeque源代码阅读笔记">
-<meta property="og:url" content="http://yoursite.com/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/index.html">
+<meta name="description" content="记录生活和技术">
+<meta name="keywords" content="java，linux，life">
+<meta property="og:type" content="website">
+<meta property="og:title" content="拾忆">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="拾忆">
-<meta property="og:description" content="类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：  没有容量限制。 非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。 不接受null数据。 作为一个栈比Stack类要快。 作为队列比LinkedList类要快。  同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在it">
+<meta property="og:description" content="记录生活和技术">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-05T07:54:59.073Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="jdk1.8--ArrayDeque源代码阅读笔记">
-<meta name="twitter:description" content="类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：  没有容量限制。 非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。 不接受null数据。 作为一个栈比Stack类要快。 作为队列比LinkedList类要快。  同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在it">
+<meta name="twitter:title" content="拾忆">
+<meta name="twitter:description" content="记录生活和技术">
 
 
 
@@ -127,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/">
+  <link rel="canonical" href="http://yoursite.com/page/2/">
 
 
 
 
 
-  <title>jdk1.8--ArrayDeque源代码阅读笔记 | 拾忆</title>
+  <title>拾忆</title>
   
 
 
@@ -152,7 +151,8 @@
     
   
 
-  <div class="container sidebar-position-right page-post-detail">
+  <div class="container sidebar-position-right 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -255,9 +255,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -287,7 +287,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">jdk1.8--ArrayDeque源代码阅读笔记</h1>
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/" itemprop="url">jdk1.8--ArrayDeque源代码阅读笔记</a></h1>
         
 
         <div class="post-meta">
@@ -299,7 +301,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T14:26:40+00:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T22:26:40+08:00">
                 2019-09-09
               </time>
             
@@ -359,7 +361,9 @@
       
 
       
-        <h3 id="类注释总结"><a href="#类注释总结" class="headerlink" title="类注释总结"></a>类注释总结</h3><p>ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：</p>
+        
+          
+            <h3 id="类注释总结"><a href="#类注释总结" class="headerlink" title="类注释总结"></a>类注释总结</h3><p>ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：</p>
 <ol>
 <li>没有容量限制。</li>
 <li>非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。</li>
@@ -401,6 +405,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doubleCapacity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> head == tail;</span><br><span class="line">    <span class="keyword">int</span> p = head;</span><br><span class="line">    <span class="keyword">int</span> n = elements.length;</span><br><span class="line">    <span class="keyword">int</span> r = n - p; <span class="comment">// number of elements to the right of p</span></span><br><span class="line">    <span class="keyword">int</span> newCapacity = n &lt;&lt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (newCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Sorry, deque too big"</span>);</span><br><span class="line">    Object[] a = <span class="keyword">new</span> Object[newCapacity];</span><br><span class="line">    System.arraycopy(elements, p, a, <span class="number">0</span>, r);</span><br><span class="line">    System.arraycopy(elements, <span class="number">0</span>, a, r, p);</span><br><span class="line">    elements = a;</span><br><span class="line">    head = <span class="number">0</span>;</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+          
+        
       
     </div>
     
@@ -415,38 +421,14 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/java/" rel="tag"># java</a>
-          
-            <a href="/tags/jdk/" rel="tag"># jdk</a>
-          
-        </div>
+
+      
+
       
 
       
       
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/24/Linux-0-11-微型计算机组成结构笔记/" rel="prev" title="Linux-0.11-微型计算机组成结构笔记">
-                Linux-0.11-微型计算机组成结构笔记 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -456,11 +438,14 @@
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
 
 
           </div>
@@ -468,10 +453,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -492,17 +473,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -562,22 +534,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#类注释总结"><span class="nav-number">1.</span> <span class="nav-text">类注释总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类初始化相关"><span class="nav-number">2.</span> <span class="nav-text">类初始化相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实例变量"><span class="nav-number">2.1.</span> <span class="nav-text">实例变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#私有工具方法介绍"><span class="nav-number">3.</span> <span class="nav-text">私有工具方法介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#calculateSize方法"><span class="nav-number">3.1.</span> <span class="nav-text">calculateSize方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allocateElements方法"><span class="nav-number">3.2.</span> <span class="nav-text">allocateElements方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#doubleCapacity方法"><span class="nav-number">3.3.</span> <span class="nav-text">doubleCapacity方法</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -718,10 +674,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 

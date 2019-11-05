@@ -270,6 +270,294 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/overlayFS介绍与实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/05/overlayFS介绍与实践/" itemprop="url">docker底层原理————overlayFS介绍与实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-05T14:29:17+08:00">
+                2019-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/filesystem/" itemprop="url" rel="index">
+                    <span itemprop="name">filesystem</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在docker底层原理的学习过程中，接触到了UnionFS的概念。</p>
+<p>UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：<br>假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。<br>我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。<br>这样我们就把A文件夹和B文件夹联合起来了。</p>
+<p>当然，在实际的实现过程中，概念会更多。</p>
+<p>UnionFS的实现是比较多的，目前docker中使用的UnionFS的实现是overlay2，而我在网上找到的相关资料并不多，<br>处于好奇，专门对其进行了一些实际操作，并记录下来。</p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>overlayFS允许一个可读写的目录覆盖在多个只读的目录之上，这些目录就构成了多个层(layer)，而当我们在联合起来的目录中工作的时候，<br>我们所有的写入操作最终都进入了最上层的读写层目录中，这一点我后续会通过命令展示。</p>
+<p>overlayFS与其他的unionFS的实现最终要的不同在于，当一个文件打开之后，所有的操作都直接和底层的文件系统打交道，这样可以保证操作的<br>性能。</p>
+<p>在Linux kernel 3.18之后，overlayFS已经集成到内核中去了。我们在该版本之后的Linux内核中，不需要安装，就可以开始使用overlayFS了。</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="可读写的联合文件系统"><a href="#可读写的联合文件系统" class="headerlink" title="可读写的联合文件系统"></a>可读写的联合文件系统</h4><p>我们使用如下命令来挂在一个overlay文件系统</p>
+<p>mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged</p>
+<p>其中，</p>
+<ol>
+<li>lowerdir的值可以是一些的文件夹列表，使用:分开,这些事只读层。</li>
+<li>merged文件夹是最终联合起来的文件系统，我们可以在merged文件夹中访问所有lowerdir和upperdir中的内容</li>
+<li>在merged文件夹所做的所有修改，最终都会存储到upperdir目录中</li>
+<li>workdir指定的目录需要和upperdir位于同一目录中</li>
+<li>文件的覆盖顺序，upperdir目录拥有最高覆盖权限，lowerdir按照mount时从左到右的顺序，权重依次降低，左边的覆盖右边的同名文件或者文件夹。<br>注意，覆盖仅仅在mount时按照此顺序，一旦mount成功后，按照文件出现的早晚覆盖，出现早的会屏蔽出现晚的同名文件。除非修改是在merged目录中进行。</li>
+</ol>
+<h4 id="开机自动挂载"><a href="#开机自动挂载" class="headerlink" title="开机自动挂载"></a>开机自动挂载</h4><p>在/etc/fstab中实现自动挂载的格式如下，本人暂未实践</p>
+<p>overlay /merged overlay noauto,x-systemd.automount,lowerdir=/lower,upperdir=/upper,workdir=/work 0 0</p>
+<h4 id="只读联合文件系统"><a href="#只读联合文件系统" class="headerlink" title="只读联合文件系统"></a>只读联合文件系统</h4><p>mount -t overlay overlay -o lowerdir=/lower1:/lower2 /merged</p>
+<h3 id="overlayFS相关演示"><a href="#overlayFS相关演示" class="headerlink" title="overlayFS相关演示"></a>overlayFS相关演示</h3><p><img src="/images/overlay/1.png" alt><br><img src="/images/overlay/2.png" alt><br><img src="/images/overlay/3.png" alt><br><img src="/images/overlay/4.png" alt><br><img src="/images/overlay/5.png" alt></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>overlayFS可以在多种应用场合中使用，我们这里关注在docker中的使用方式。<br>在docker中个，多个镜像可以看做是多个lowerdir，只读层，当我们启动一个容器的时候，使用overlayFS将多个镜像<br>联合挂载到一个目录，并使得容器中可以对目录中的文件进行读写操作，但读写操作仅仅会影响到当前容器的upperdir和<br>当前目录，并不会影响到镜像中的数据。</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.jianshu.com/p/47c4a06a84a4" target="_blank" rel="noopener">Docker技术三大要点：cgroup, namespace和unionFS的理解</a><br><a href="https://wiki.archlinux.org/index.php/Overlay_filesystem" target="_blank" rel="noopener">Overlay filesystem</a><br><a href="https://blog.csdn.net/songcf_faith/article/details/82787946" target="_blank" rel="noopener">Docker技术原理之Linux UnionFS（容器镜像）</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/15/Linux0-11内核中fork系统调用实现代码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/15/Linux0-11内核中fork系统调用实现代码分析/" itemprop="url">Linux0.11内核中fork系统调用实现代码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-15T17:06:39+08:00">
+                2019-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="暂时记住"><a href="#暂时记住" class="headerlink" title="暂时记住"></a>暂时记住</h3><ol>
+<li>在Linux0.11版本中，代码段和数据段的基地址是相等的</li>
+<li>当新建一个进程的时候，其代码段和数据段的基地址为nr * 0x4000000，其中<br>nr为任务号，这就保证了不同任务之间的内存隔离。</li>
+<li></li>
+</ol>
+<h3 id="copy-page-tables"><a href="#copy-page-tables" class="headerlink" title="copy_page_tables"></a>copy_page_tables</h3>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/12/Linux-0-11内核main函数执行过程分析——2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -650,147 +938,6 @@
 <li>move_to_user_mode。该函数的具体意义的进一步分析。</li>
 </ol>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/11/jdk1-8-HashMap源代码阅读笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王千一">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="拾忆">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/11/jdk1-8-HashMap源代码阅读笔记/" itemprop="url">jdk1.8--HashMap源代码阅读笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T11:21:15+08:00">
-                2019-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/jdk源代码阅读笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">jdk源代码阅读笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
           
         
       
@@ -1952,191 +2099,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王千一">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="拾忆">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/" itemprop="url">jdk1.8--ArrayDeque源代码阅读笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T22:26:40+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/jdk源代码阅读笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">jdk源代码阅读笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="类注释总结"><a href="#类注释总结" class="headerlink" title="类注释总结"></a>类注释总结</h3><p>ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：</p>
-<ol>
-<li>没有容量限制。</li>
-<li>非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。</li>
-<li>不接受null数据。</li>
-<li>作为一个栈比Stack类要快。</li>
-<li>作为队列比LinkedList类要快。</li>
-</ol>
-<p>同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在iterator创建之后对deque的删除操作，都会出发ConcurrentModificationException异常。</p>
-<h3 id="类初始化相关"><a href="#类初始化相关" class="headerlink" title="类初始化相关"></a>类初始化相关</h3><h4 id="实例变量"><a href="#实例变量" class="headerlink" title="实例变量"></a>实例变量</h4><p>可以看到以下几点：</p>
-<ol>
-<li>ArrayDeque内部使用的是一个对象数组来存储元素的。</li>
-<li>使用了一个头指针head，指向了当前可以删除的元素下标。</li>
-<li>使用了一个尾指针tail，指向了下一个可以添加数据的位置下表。</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> Object[] elements;</span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> head;</span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> tail;</span><br></pre></td></tr></table></figure>
-
-<h3 id="私有工具方法介绍"><a href="#私有工具方法介绍" class="headerlink" title="私有工具方法介绍"></a>私有工具方法介绍</h3><h4 id="calculateSize方法"><a href="#calculateSize方法" class="headerlink" title="calculateSize方法"></a>calculateSize方法</h4><p>calculateSize方法通过位运算的方式，得到了一个恰好大于入参numElements的一个2的次幂。方法解释如下：</p>
-<ol>
-<li>对于任何入参numElements，必定有一个最高位1，通过一次右移，并与原来的numElements进行或操作。必定得到一个高两位为1的数字。</li>
-<li>对1中得到的高两位为1的数字a，再右移两位得到数字b ，两者再进行或操作，得到一个高四位为1的数字</li>
-<li>以此类推，我们可以把从入参numElements最高位1后的所有位都变为1。</li>
-<li>由于java。中的int位32位，那么我们可以保证在右移16位后一定可以把任何一个int型入参变为高位后所有位都为1的数字</li>
-<li>对上述得到的数字加1，即得到了一个2的次幂，且恰好大于入参numElements</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_INITIAL_CAPACITY = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ******  Array allocation and resizing utilities ******</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculateSize</span><span class="params">(<span class="keyword">int</span> numElements)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> initialCapacity = MIN_INITIAL_CAPACITY;</span><br><span class="line">    <span class="comment">// Find the best power of two to hold elements.</span></span><br><span class="line">    <span class="comment">// Tests "&lt;=" because arrays aren't kept full.</span></span><br><span class="line">    <span class="keyword">if</span> (numElements &gt;= initialCapacity) &#123;</span><br><span class="line">        initialCapacity = numElements;</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">1</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">2</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">4</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">8</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">        initialCapacity++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)   <span class="comment">// Too many elements, must back off</span></span><br><span class="line">            initialCapacity &gt;&gt;&gt;= <span class="number">1</span>;<span class="comment">// Good luck allocating 2 ^ 30 elements</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> initialCapacity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="allocateElements方法"><a href="#allocateElements方法" class="headerlink" title="allocateElements方法"></a>allocateElements方法</h4><p>参考上一节，allocateElements方法不难理解。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">allocateElements</span><span class="params">(<span class="keyword">int</span> numElements)</span> </span>&#123;</span><br><span class="line">    elements = <span class="keyword">new</span> Object[calculateSize(numElements)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="doubleCapacity方法"><a href="#doubleCapacity方法" class="headerlink" title="doubleCapacity方法"></a>doubleCapacity方法</h4><p>顾名思义，对容量进行翻倍。具体看看如何实现：</p>
-<ol>
-<li>这里假定头指针和尾指针相遇了。</li>
-<li>计算当前数组的长度n。</li>
-<li>计算头指针右侧的数据个数。</li>
-<li>对n进行左移一位操作，得到新的数组容量newCapacity。n为2的次幂。</li>
-<li>初始化一个容量为newCapacity的新的数组。</li>
-<li>将原来的数组元素复制到新数组中。</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doubleCapacity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> head == tail;</span><br><span class="line">    <span class="keyword">int</span> p = head;</span><br><span class="line">    <span class="keyword">int</span> n = elements.length;</span><br><span class="line">    <span class="keyword">int</span> r = n - p; <span class="comment">// number of elements to the right of p</span></span><br><span class="line">    <span class="keyword">int</span> newCapacity = n &lt;&lt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (newCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Sorry, deque too big"</span>);</span><br><span class="line">    Object[] a = <span class="keyword">new</span> Object[newCapacity];</span><br><span class="line">    System.arraycopy(elements, p, a, <span class="number">0</span>, r);</span><br><span class="line">    System.arraycopy(elements, <span class="number">0</span>, a, r, p);</span><br><span class="line">    elements = a;</span><br><span class="line">    head = <span class="number">0</span>;</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -2180,7 +2149,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2191,7 +2160,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2202,7 +2171,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
