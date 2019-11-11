@@ -43,6 +43,7 @@ service-name.service文件，我们就可以使用systemctl start service-name.s
 ### 总结
 
 这里特意学习systemd，导火索是在看containerd文档时，涉及到了systemd相关内容，但是又一知半解，索性放开containerd，先补一下systemd的相关知识。
+这个仓库的[代码](https://github.com/xdushepherd91/systemd-test)是我在学习service和target的时候的一些练习代码，仅供参考
 
 
 
