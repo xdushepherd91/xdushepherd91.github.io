@@ -40,6 +40,9 @@ service-name.service文件，我们就可以使用systemctl start service-name.s
 5. 其他unit。除了service，target之外，还有其他的unit，比如device，mount,auotmount，timer等等，种类很多，但是基本上和service类似，如果需要使用，则可以
 做针对性学习
 
+### 总结
+
+这里特意学习systemd，导火索是在看containerd文档时，涉及到了systemd相关内容，但是又一知半解，索性放开containerd，先补一下systemd的相关知识。
 
 
 
