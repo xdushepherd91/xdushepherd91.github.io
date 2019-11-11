@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="概述在各种新技术的教程中，看到了服务启动从service apache2 start变到了systemctl start apache2.service，心中充满了疑惑，这是什么东西？通过浏览各种博客，我下了一个初步的结论，service service-name start我不需要做过多的了解了，但是，systemctl start service-name.service，作为未来一段时间的主">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-11T09:10:23.615Z">
+<meta property="og:updated_time" content="2019-11-11T09:53:34.128Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="systemd学习笔记">
 <meta name="twitter:description" content="概述在各种新技术的教程中，看到了服务启动从service apache2 start变到了systemctl start apache2.service，心中充满了疑惑，这是什么东西？通过浏览各种博客，我下了一个初步的结论，service service-name start我不需要做过多的了解了，但是，systemctl start service-name.service，作为未来一段时间的主">
@@ -380,6 +380,7 @@
 </li>
 <li>其他unit。除了service，target之外，还有其他的unit，比如device，mount,auotmount，timer等等，种类很多，但是基本上和service类似，如果需要使用，则可以<br>做针对性学习</li>
 </ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这里特意学习systemd，导火索是在看containerd文档时，涉及到了systemd相关内容，但是又一知半解，索性放开containerd，先补一下systemd的相关知识。<br>这个仓库的<a href="https://github.com/xdushepherd91/systemd-test" target="_blank" rel="noopener">代码</a>是我在学习service和target的时候的一些练习代码，仅供参考</p>
 
       
     </div>
@@ -552,7 +553,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">3.</span> <span class="nav-text">关键点</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">3.</span> <span class="nav-text">关键点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
