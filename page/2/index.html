@@ -270,6 +270,585 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/Linux-0-11-80x86保护模式及其编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/24/Linux-0-11-80x86保护模式及其编程/" itemprop="url">Linux-0-11-80x86保护模式及其编程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T15:38:15+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux 内核</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="80x86-系统寄存器和系统指令"><a href="#80x86-系统寄存器和系统指令" class="headerlink" title="80x86 系统寄存器和系统指令"></a>80x86 系统寄存器和系统指令</h2><p>为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，<br>EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、<br>含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。</p>
+<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png" alt></p>
+<h3 id="内存管理寄存器"><a href="#内存管理寄存器" class="headerlink" title="内存管理寄存器"></a>内存管理寄存器</h3><p>处理器提供了4个内存管理寄存器，分别是GDTR、LDTR、IDTR和TR。用于指定分段内存管理所使用的系统表的基地址。</p>
+<p>上述4个寄存器都是段基地址寄存器，这些段含有分段机制的重要信息表。GDTR、LDTR、IDTR是用于存放描述符表的段。TR用于寻找一个特殊的任务状态段TSS(task state segment)。TSS段包含着当前执行任务的重要信息。</p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png" alt></p>
+<ol>
+<li>全局描述符表寄存器GDTR。32位基地址+16位表长度。LGDT和SGDT分别用于加载和保存GDTR的值。机器刚加电时候，基地址默认为0，长度值默认为0xFFFF。在保护模式初始化过程中必须给 GDTR加载一个新值。</li>
+<li>中断描述符表寄存器IDTR。与GDTR类似。</li>
+<li>局部描述符表寄存器LDTR。32位基地址+16位（段限长和描述符属性值）</li>
+<li>任务寄存器TR。</li>
+</ol>
+<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/cr.png" alt></p>
+<h2 id="保护模式内存管理"><a href="#保护模式内存管理" class="headerlink" title="保护模式内存管理"></a>保护模式内存管理</h2><h3 id="内存寻址"><a href="#内存寻址" class="headerlink" title="内存寻址"></a>内存寻址</h3><p>80x86提供了6个存放段选择符的段寄存器：CS、DS、SS、ES、FS、GS。</p>
+<ol>
+<li>其中CS总是用于寻址代码段、而SS总是用于堆栈段。在任何时刻由CS寻址的段称为当前代码段。此时EIP寄存器中包含了当前代码段内下一条要执行的指令的段内偏移地址。因此要执行的指令地址可比表示为CS:[EIP]。</li>
+<li>由段寄存器SS寻址的段成为当前堆栈段。栈顶由ESP寄存器内容指定，当前堆栈顶处于地址SS:[ESP]。帧底地址为SS:[EBP]。</li>
+</ol>
+<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/segment.png" alt></p>
+<h4 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h4><p>段选择符、段描述符表、段描述符、段基地址、偏移量</p>
+<h4 id="分页机制"><a href="#分页机制" class="headerlink" title="分页机制"></a>分页机制</h4><p>略</p>
+<h4 id="保护"><a href="#保护" class="headerlink" title="保护"></a>保护</h4><ol>
+<li>任务间保护</li>
+<li>特权级保护</li>
+</ol>
+<h4 id="分段机制-1"><a href="#分段机制-1" class="headerlink" title="分段机制"></a>分段机制</h4><ol>
+<li>段的定义。段基地址+段限长+段属性。以上组成了段描述符</li>
+<li>段描述符。同上。使用段选择符在段描述符表中定位段描述符。得到段基地址。加上偏移量得到线性地址。</li>
+<li>段描述符表。GDT和LDT。存放段描述符的数组。</li>
+<li>段选择符。描述符索引+TI+RPL。代码段描述符、数据段描述符、系统描述符</li>
+<li>系统描述符。<ol>
+<li>局部描述符表的段描述符</li>
+<li>任务状态段描述符</li>
+<li>调用们描述符</li>
+<li>中断门描述符</li>
+<li>陷阱门描述符</li>
+<li>任务门描述符</li>
+</ol>
+</li>
+</ol>
+<p>略。</p>
+<h3 id="任务管理"><a href="#任务管理" class="headerlink" title="任务管理"></a>任务管理</h3><p>任务是处理器可以被分配调度、执行和挂起的一个工作单元。80x86提供了一种机制，这种机制可以用来保存任务的状态、分派任务执行以及从一个任务切换到另一个任务。当工作在保护模式下，处理器所有运行都在任务中。</p>
+<p>80x86提供了多任务的硬件支持。任务是一个正在运行的程序，或者是一个等待准备运行的程序。通过中断、异常、 跳转或调用，我们可以执行一个任务。</p>
+<p>任务切换和过程调用类似，但任务切换会保存更多的寄存器信息。这些信息被保存在TSS中。</p>
+<h4 id="任务的结构和状态"><a href="#任务的结构和状态" class="headerlink" title="任务的结构和状态"></a>任务的结构和状态</h4><p>任务有由任务执行空间和任务状态段组成。任务执行空间包括代码段、堆栈段和一个或者多个数据段。TSS指定了构成任务执行空间的各个段。</p>
+<p>一个任务用指向其TSS的段选择符来指定。当一个任务被加载进处理器中执行时，那么该任务的段选择符、基地址、段限长以及TSS段描述符都会被加载到任务寄存器TR中。</p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/tss.png" alt></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/Linux-0-11-内核编程语言和环境笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/24/Linux-0-11-内核编程语言和环境笔记/" itemprop="url">Linux-0-11-内核编程语言和环境笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T13:56:38+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux 内核</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="as86汇编器"><a href="#as86汇编器" class="headerlink" title="as86汇编器"></a>as86汇编器</h3><p>在Linux0.11中，有两种汇编语言程序，分别是能产生16位代码的as86汇编器，使用配套的ld86链接器。另一种是GNU的汇编器gas（现在改名为as）<br>，使用GNU ld链接器来链接目标文件。</p>
+<p>在Linux0.11中，使用了as86和ald86来创建16位的启动引导扇区程序boot/bootsect.s和实模式下初始化设置程序boot/setup.s的二进制编码。</p>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><p>汇编器专门用来把低级汇编语言翻译成含有机器码的二进制程序或者目标文件。汇编的命令行基本格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">as [选项] -o objfile srcfile</span><br></pre></td></tr></table></figure>
+
+<p>源文件是由换行字符结尾的一些列文本行组成的，虽然可以使用分号在一行上包含多个行，但通常汇编语言程序每行只包含一行语句。</p>
+<p>语句可以使空行，也可以是赋值语句、伪操作符语句和机器指令语句。</p>
+<ol>
+<li>赋值语句。例如 bootset = 0x700就是一个赋值语句</li>
+<li>伪操作符语句。通常不会产生任何代码，仅仅是汇编器使用的指示符，由伪操作码和0个或者多个操作数组成。每个操作码都是有点符号.开始。</li>
+<li>机器指令语句。机器指令语句是可执行机器指令的助记符，由操作码和0个或者多个操作数构成。可以有标号，也可以没有。</li>
+</ol>
+<p>汇编器产生的目标文件objfile通常至少包含三个段或区，即正文段.text，数据段.data和未初始化数据段.bss。</p>
+<ol>
+<li>.text 是一个已经初始化过的段，通常其中包含程序的执行代码和只读数据。</li>
+<li>.data 也是一个已经初始化过的段，通常包含有可读可写的数据。</li>
+<li>.bss  是一个未初始化的段。在执行程序被加载的时候，该段的内容被全部初始化成0。</li>
+</ol>
+<h4 id="as86汇编语言的编译和链接"><a href="#as86汇编语言的编译和链接" class="headerlink" title="as86汇编语言的编译和链接"></a>as86汇编语言的编译和链接</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">as86 -0 -a -o boot.o boot.s</span><br><span class="line">ld86 -0 -s -o boot boot.o</span><br><span class="line">dd bs=32 <span class="keyword">if</span>=boot of=/dev/fd0 skip=1</span><br></pre></td></tr></table></figure>
+
+<h3 id="GNU-as-汇编"><a href="#GNU-as-汇编" class="headerlink" title="GNU as 汇编"></a>GNU as 汇编</h3><p>除去之前的两个汇编文件，内核中的其他汇编程序均由gas来编译，并与C语言程序编译产生的模块链接。以下简称gas为as。</p>
+<p>略。</p>
+<h4 id="区和重定位"><a href="#区和重定位" class="headerlink" title="区和重定位"></a>区和重定位</h4><p>区表示了一个地址范围，操作系统将会以相同的方式对待和处理在该地址范围中的数据信息。例如，对于只读区，我们只能从该区中读取数据而不能写入。</p>
+<p>链接器ld会把输入的目标文件中的内容按照一定的规律组合成一个可执行程序。当as汇编器输出一个目标文件时，该目标文件中的代码被默认设置成从地址0开始。此后ld将会在链接过程中为不同的目标文件的各个部分分配不同的最终地址。ld会把程序中的字节块移动到程序运行时的地址处。这些块是作为固定单元进行移动的，他们的长度以及字节序都不会改变。这样的固定单元就被称作是区。</p>
+<p>为区分配运行时刻的地址的操作j就被称为重定位操作。</p>
+<p>在一个区被重定位时，为了让链接器ld知道哪些数据会发生变化以及如何修改这些数据，as汇编器也会往目标文件中写入所需要的重定位信息。为了执行重定位操作，在每次涉及目标文件的一个地址时，ld必须知道：</p>
+<ol>
+<li>目标文件对一个地址的引用是从什么地方算起的？</li>
+<li>该引用的字节长度是多少？</li>
+<li>该地址引用的是哪个区？值等于多少？</li>
+<li>对地址的引用与程序计数器pc相关吗？</li>
+</ol>
+<p>绝对地址区（absolute 区）。当链接器把各个目标文件组合在一起时，absolute区中的地址始终不变。尽管链接器在链接后绝不会把两个目标文件的data区安排在重叠的地址上，但是目标文件的absolute区必会重叠而覆盖。</p>
+<p>另外还有一个未定义区</p>
+<h4 id="子区"><a href="#子区" class="headerlink" title="子区"></a>子区</h4><p>略。</p>
+<h4 id="汇编指令"><a href="#汇编指令" class="headerlink" title="汇编指令"></a>汇编指令</h4><ol>
+<li>.align expr1 expr2 expr3。.align是汇编对齐指令，用于在当前子区中把位置计数器值设置到下一个指定存储边界处。</li>
+<li>.ascii “String”。 从位置计数器当前位置为字符串分配空间并存储字符串。可以逗号分开写出多个字符串。不会在每个字符串后添加0。</li>
+<li>.asciz “String”。 同上，但是会在每个字符串后添加null字符。</li>
+<li>.byte  expressions。该汇编命令定义0个或者多个用逗号分开的字节值。每个表达式的值是一个字节。<br>略。</li>
+</ol>
+<h4 id="嵌入汇编"><a href="#嵌入汇编" class="headerlink" title="嵌入汇编"></a>嵌入汇编</h4><p>C语言编程时可以在代码中内嵌汇编代码其格式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">asm(</span><br><span class="line">    &quot;汇编语句&quot;</span><br><span class="line">    : 输出寄存器</span><br><span class="line">    : 输入寄存器</span><br><span class="line">    : 会被修改的寄存器</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>除了第一行，后面带冒号的行都是可以被省略的。</p>
+<h4 id="寄存器变量"><a href="#寄存器变量" class="headerlink" title="寄存器变量"></a>寄存器变量</h4><p>GNU对C语言的另一个扩充时允许我们把一些变量值放到CPU寄存器中，即所谓寄存器变量。这样CPU就不用花费较长时间访问内存区取值。寄存器变量分为两种：</p>
+<ol>
+<li>全局寄存器变量</li>
+<li>局部寄存器变量</li>
+</ol>
+<h4 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h4><p>在程序中，通过把一个函数生命为inline，内联函数，就可以让gcc把函数代码集成到该函数的代码中去。这样处理可以去掉函数调用时进入和退出的开销，从而加快执行速度。</p>
+<h3 id="C语言与汇编程序的相互调用"><a href="#C语言与汇编程序的相互调用" class="headerlink" title="C语言与汇编程序的相互调用"></a>C语言与汇编程序的相互调用</h3><h4 id="c函数调用机制"><a href="#c函数调用机制" class="headerlink" title="c函数调用机制"></a>c函数调用机制</h4><p>在Linux内核程序boot/head.s执行完基本初始化操作之后，就会跳转执行init/main.c程序。那么head.s是如何把执行控制交给init/main.c程序的呢？</p>
+<ol>
+<li>栈帧结构和控制转移权方式。大多数CPU上的程序都是使用栈来支持函数调用操作的。栈被用来存储函数参数、存储返回信息、临时保存寄存器原有值以及存储局部数据。单个函数调用操作所使用的栈部分被称位栈帧机构。如下：</li>
+</ol>
+<p><img src="/images/stack-frame.png" alt></p>
+<p>栈帧的两端由两个指针来指定。寄存器ebp通常用作帧指针，而esp则用作栈指针。栈指针esp会随着数据的入栈和出栈而移动，因此函数中对大部分数据的访问都基于帧指针ebp进行。</p>
+<p>对于函数A调用函数B的情况，传递给B的参数包含在A的栈帧中。当A调用B时，函数A的返回地址（调用结束后继续执行的指令地址）被压入栈中，栈中该位置也明确指明了A栈帧的结束处。而B的栈帧则从随后的栈部分开始，即图中保存帧指针（ebp）的地方开始。再随后则用于存放任何保存的j寄存器的值以及函数的临时之。</p>
+<p>栈是往低地址方向扩展的。而esp指向当前栈顶处的元素。通过使用push和pop指令我们可以将数据压入栈中或从栈中弹出。</p>
+<p>指令call和ret用于处理函数调用和返回操作。</p>
+<ol>
+<li>调用call指令程序将返回地址压入栈中并调转到被调用函数处开始执行。返回地址是程序中紧跟指令call后面的一条指令的地址。</li>
+<li>返回指令ret用于弹出栈顶的地址并跳转到该地址处。使用该指令之前，需要先正确处理栈中的n内容，使得当前栈指针所指位置内容正是先前call指令保存到的返回地址。</li>
+<li>若返回值是一个正数或者指针，那么j寄存器eax将被默认用来传递返回值。</li>
+</ol>
+<p>略。</p>
+<h3 id="目标文件格式"><a href="#目标文件格式" class="headerlink" title="目标文件格式"></a>目标文件格式</h3><p>略。</p>
+<h3 id="Make程序和Makefile文件"><a href="#Make程序和Makefile文件" class="headerlink" title="Make程序和Makefile文件"></a>Make程序和Makefile文件</h3><p>make工具程序的主要用途是能自动地决定含有很多源程序文件的大型程序中哪些文件需要被重新编译，makefile是make工具程序的配置文件。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/Linux-0-11-微型计算机组成结构笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/24/Linux-0-11-微型计算机组成结构笔记/" itemprop="url">Linux-0.11-微型计算机组成结构笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T10:22:10+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux 内核</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p>CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，</p>
+<ol>
+<li>地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。</li>
+<li>数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。</li>
+<li>控制总线，用于指挥执行的具体读写操作。</li>
+</ol>
+<p>在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。</p>
+<p>下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。<br>git a<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/pc-structure.png" alt="test"></p>
+<h3 id="现代pc"><a href="#现代pc" class="headerlink" title="现代pc"></a>现代pc</h3><p>现代pc的主板主要使用2个超大规模芯片构成的芯片组或者芯片集组成：北桥芯片和南桥芯片。</p>
+<ol>
+<li>北桥。用于CPU、内存、视频接口，具有很高的传输速率。</li>
+<li>南桥。用来管理低速、中速组件。</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/modern-pc-structure.png" alt="test"></p>
+<h3 id="io寻址方式和访问控制方式"><a href="#io寻址方式和访问控制方式" class="headerlink" title="io寻址方式和访问控制方式"></a>io寻址方式和访问控制方式</h3><p>CPU为了访问io接口控制器或者控制卡上的数据和状态信息，需要首先指定他们的地址。这种地址就成为IO端口地址或者简称端口。端口地址的设置方法有两种：统一编址和独立编址。</p>
+<ol>
+<li>统一编址。将IO控制器中的端口地址归入存储器寻址空间范围内。</li>
+<li>独立编址。单独对待IO控制器和控制卡的地址，使用专门的IO指令来访问端口</li>
+</ol>
+<p>IBM兼容pc主要使用独立编址方式。采用独立的IO地址空间对控制设备的寄存器进行寻址和访问。</p>
+<p>IBM兼容pc也部分地使用了统一编址的方式。例如，CGA显示卡显示内存的地址就直接占用存储器地址的0xB800-0xBC00范围，若要让一个字符显示在屏幕上，可以直接使用内存操作指令往这个内存区域执行写操作。</p>
+<h3 id="接口访问控制"><a href="#接口访问控制" class="headerlink" title="接口访问控制"></a>接口访问控制</h3><p>pc机的io接口数据访问控制方式一般可采用：</p>
+<ol>
+<li>程序循环查询方式。浪费CPU时间。</li>
+<li>中断处理方式。需要中断控制器支持。</li>
+<li>DMA传输方式。需要DMA控制器支持。</li>
+</ol>
+<p>目前Linux操作系统主要使用了后两种方式。</p>
+<h3 id="主存储器、BIOS和CMOS存储器"><a href="#主存储器、BIOS和CMOS存储器" class="headerlink" title="主存储器、BIOS和CMOS存储器"></a>主存储器、BIOS和CMOS存储器</h3><h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><p>32为cpu的寻址范围已经达到了4GB，而ROM中的BIOS一直处于CPU能寻址的内存最高端位置处。</p>
+<h4 id="基本输出输出程序BIOS"><a href="#基本输出输出程序BIOS" class="headerlink" title="基本输出输出程序BIOS"></a>基本输出输出程序BIOS</h4><p>存放在ROM中的系统BIOS程序主要用于计算机开机时执行的系统各部分自检，建立起操作系统需要使用的各种配置表，例如中断向量表，硬盘参数表等。并把处理器和系统其余部分初始化到一个已知状态，为操作系统提供硬件设备接口服务。</p>
+<p>在机器上电之后，CPU会自动把代码段寄存器cs设置为0xF000，其段基地址则被设置为0xFFFFFFF0，段长度设置为64KB。而IP则被设置为0xFFF0，因此此时CPU代码指针指向0xFFFFFFF0处，即4G空间的最后64K的最后16字节处。这正是系统ROM BIOS程序的存放位置。 并且BIOS会在这里存放一条jmp指令，使得cpu跳转到最后64K范围内的某一条指令开始执行。</p>
+<h4 id="CMOS存储器"><a href="#CMOS存储器" class="headerlink" title="CMOS存储器"></a>CMOS存储器</h4><p>CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常和实时时钟芯片集成，使用io指令来访问。</p>
+<h3 id="控制器和控制卡"><a href="#控制器和控制卡" class="headerlink" title="控制器和控制卡"></a>控制器和控制卡</h3><h4 id="中断控制器"><a href="#中断控制器" class="headerlink" title="中断控制器"></a>中断控制器</h4><p>80386中的中断控制器用于实现io设备的中断控制存取方式，并且能为15个设备提供独立的中断控制功能。</p>
+<p>在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter.png" alt></p>
+<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png" alt></p>
+<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
+<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png" alt></p>
+<h4 id="DMA控制器"><a href="#DMA控制器" class="headerlink" title="DMA控制器"></a>DMA控制器</h4><p>DMA控制器的主要功能是让外部设备直接与内存进行数据传输来增强系统的性能，有了DMA控制器，外设和内存能在不受CPU控制的条件下进行传输。</p>
+<h4 id="定时器、计数器"><a href="#定时器、计数器" class="headerlink" title="定时器、计数器"></a>定时器、计数器</h4><p>定时器按照一定的时间间隔发送中断请求信号。中断请求时Linux内核工作的脉搏，用于定时切换当前执行的任务和统计每个任务使用的系统时间资源量。</p>
+<h4 id="键盘控制器"><a href="#键盘控制器" class="headerlink" title="键盘控制器"></a>键盘控制器</h4><p>接受键盘输入请求。</p>
+<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/disk-structure.png" alt></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -489,7 +1068,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -500,7 +1079,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -511,7 +1090,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
