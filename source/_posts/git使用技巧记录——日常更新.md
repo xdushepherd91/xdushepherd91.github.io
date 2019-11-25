@@ -43,8 +43,22 @@ git diff命令是用来对比文件差异的，可以使工作目录与索引库
 2019/11/19 16:27
 复习次数：1
 
+### 基于远程新分支创建本地分支
 
+方法一：
 
+1. git fetch
+2. git checkot -b branch-name origin/branch-name
+
+方法二(未经检验)：
+1. git fetch orgin remote-branch-name:local-branch-name
+2. git checkout local-branch-name
+
+我使用了方法一，未检验方法二，还有其他的方式，不过一般来说，这两种方法就够用了。
+
+学习时间：
+2019/11/19 16:34
+复习次数：1
 
 
 
