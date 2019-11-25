@@ -270,6 +270,179 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/25/linux0-11中的mount工作流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王千一">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="拾忆">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/25/linux0-11中的mount工作流程/" itemprop="url">linux0.11中的mount工作流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-25T17:14:06+08:00">
+                2019-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux 内核</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="date-2019-11-22-09-47-00"><a href="#date-2019-11-22-09-47-00" class="headerlink" title="date: 2019-11-22 09:47:00"></a>date: 2019-11-22 09:47:00</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，<br>以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存<br>最近使用的inode数据。</p>
+<p>对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码绘制的，里面包含了超级块和inode的一些细节，以及在挂载过程中使用到的函数。</p>
+<p><img src="/images/mount.png" alt></p>
+<h3 id="关于缓冲头和缓冲区的介绍"><a href="#关于缓冲头和缓冲区的介绍" class="headerlink" title="关于缓冲头和缓冲区的介绍"></a>关于缓冲头和缓冲区的介绍</h3><p>在linux0.11版本的内核中，当内核从文件系统中读取到了指定块的数据之后，会将其缓冲在高速缓冲区中，而缓冲区头的作用就是标记其指向的缓冲区属于哪个设备的哪个数据块。</p>
+<p>在我们挂载文件系统的过程中，必然涉及到了这些内容，所以这里实现提一下。</p>
+<h3 id="根目录的挂载流程"><a href="#根目录的挂载流程" class="headerlink" title="根目录的挂载流程"></a>根目录的挂载流程</h3><p>在linux内核启动的时候，必然要对根目录/进行挂载，其挂载流程如下：</p>
+<ol>
+<li><p>初始化超级块数组。同时初始化了文件数组（这个不是很理解）</p>
+</li>
+<li><p>使用read_super函数读取根设备的超级块数据，并放置在超级块数组的第一项中</p>
+</li>
+<li><p>使用iget函数读取根设备的第一个inode,并将其存放在inode数组的第一项中</p>
+</li>
+<li><p>更新inode的引用计数，保证该inode不会被其他进程回收。</p>
+</li>
+<li><p>将该super block的s_isup和s_imount为该inode，表示该superblock是根super_block并且其挂载点是该inode</p>
+</li>
+<li><p>将启动进程的root工作更新为该inode，将启动进程的当前工作目录更新为该inode。</p>
+</li>
+<li><p>打印一些与根目录元数据相关的信息</p>
+</li>
+<li><p>挂载结束</p>
+</li>
+</ol>
+<h3 id="其他文件系统的挂载分析"><a href="#其他文件系统的挂载分析" class="headerlink" title="其他文件系统的挂载分析"></a>其他文件系统的挂载分析</h3><p>我们很容易可以推出其他文件系统的挂载流程，与根文件系统的挂载如出一辙，不同的是，被挂载文件系统super_block的s_isup不会被置位，表示其不是根文件系统</p>
+<h3 id="关于文件打开过程中的疑问"><a href="#关于文件打开过程中的疑问" class="headerlink" title="关于文件打开过程中的疑问"></a>关于文件打开过程中的疑问</h3><p>分析mount流程的动力在于，在我们去打开一个mount目录的文件的时候，内核中的执行流程如何对其进行判断，答案是置换。文件打开的流程分析：</p>
+<ol>
+<li>从根inode或者进程的当前工作目录inode开始，向下查找inode。</li>
+<li>当遇到一个挂载点inode(通过inode的i_mount属性判断)，内核在超级块数组中查找挂载在该inode的超级块，获取到超级块的dev设备号</li>
+<li>从对应设备号的设备读取第一个inode，替换为挂载点inode，就完成了mount点的转换。</li>
+</ol>
+<p>当然，在上述过程中，遇到问题需要报错，遇到可以缓存的可以缓存，这里仅仅叙述了主要执行流程。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/git使用技巧记录——日常更新/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -382,6 +555,18 @@
 </ol>
 <p>由于输入失误，将分支名称写错了，同时本人略带强迫症，因此从网上找了相关教程，将远程分支名称做了修改。</p>
 <p>学习时间：<br>2019/11/19 16:27<br>复习次数：1</p>
+<h3 id="基于远程新分支创建本地分支"><a href="#基于远程新分支创建本地分支" class="headerlink" title="基于远程新分支创建本地分支"></a>基于远程新分支创建本地分支</h3><p>方法一：</p>
+<ol>
+<li>git fetch</li>
+<li>git checkot -b branch-name origin/branch-name</li>
+</ol>
+<p>方法二(未经检验)：</p>
+<ol>
+<li>git fetch orgin remote-branch-name:local-branch-name</li>
+<li>git checkout local-branch-name</li>
+</ol>
+<p>我使用了方法一，未检验方法二，还有其他的方式，不过一般来说，这两种方法就够用了。</p>
+<p>学习时间：<br>2019/11/19 16:34<br>复习次数：1</p>
 
           
         
@@ -1857,202 +2042,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/26/Linux-0-11文件系统模块笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王千一">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="拾忆">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/26/Linux-0-11文件系统模块笔记/" itemprop="url">Linux-0-11文件系统模块笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T13:43:20+08:00">
-                2019-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux 内核</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在Linux内核中，文件系统部分大致可以分为四个部分来看：</p>
-<ol>
-<li>高速缓冲区。该部分内容集中在bufffer.c中实现。</li>
-<li>文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。</li>
-<li>有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。</li>
-<li>文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。</li>
-</ol>
-<h3 id="高速缓冲区"><a href="#高速缓冲区" class="headerlink" title="高速缓冲区"></a>高速缓冲区</h3><p>高速缓冲区是文件系统访问块设备中数据的必经要道。</p>
-<p>高速缓冲区由缓冲区头和缓冲区块构成。</p>
-<p>其物理位置位于内核代码和主内存之间。高速缓冲区块中存放着最近被使用过的各个块设备中的数据块。</p>
-<p>当需要从块设备读取数据时，缓冲区管理程序首先在缓冲区中查找，即检索缓冲区头。如果已经存在，直接读取即可。</p>
-<p>写入的时候，也是先写入到高速缓冲区中，至于什么时候真正的写入数据，则是要通过设备数据同步是现代的。</p>
-<p>Linux内核实现高速缓冲区的程序是buffer.c。文件系统中其他程序通过指定需要访问的设备号和数据逻辑块号来调用它的块读写函数。</p>
-<ol>
-<li>块读取函数bread()</li>
-<li>块提前预读函数breada()</li>
-<li>页读取函数bread_page()</li>
-</ol>
-<h3 id="文件系统底层函数"><a href="#文件系统底层函数" class="headerlink" title="文件系统底层函数"></a>文件系统底层函数</h3><p>文件系统底层处理函数包含以下5个文件：</p>
-<ol>
-<li>bitmap.c。包括了inode位图和逻辑块位图进行释放和占用处理函数。分别有<ol>
-<li>free_inode和new_inode。</li>
-<li>free_block和new_block。</li>
-</ol>
-</li>
-<li>truncate.c。该程序包括了将数据文件长度截断为0的函数truncate()。将inode指定设备的文件长度设置为0，并释放文件数据占用的设备逻辑块。</li>
-<li>inode.c。程序包括分配inode函数iget()和放回对内存inode存取函数iput()以及根据inode节点信息取文件数据块在设备上对应的逻辑块号函数bmap()。</li>
-<li>namei.c。程序主要包括函数namei()。该函数使用iget(),iput()和bmap()将给定文件路径名映射到其inode上。</li>
-<li>super.c。专门用于处理文件系统超级块，包括了函数get_super(),put_super()和free_super()等。</li>
-</ol>
-<h3 id="文件中数据的访问"><a href="#文件中数据的访问" class="headerlink" title="文件中数据的访问"></a>文件中数据的访问</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>block_dev.c</li>
-<li>file_dev.c</li>
-<li>char_dev.c</li>
-<li>pipe.c</li>
-<li>read_write.c</li>
-</ol>
-<h3 id="文件和目录管理的系统调用"><a href="#文件和目录管理的系统调用" class="headerlink" title="文件和目录管理的系统调用"></a>文件和目录管理的系统调用</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>open.c。该文件用于实现与文件操作相关的系统调用。主要有文件的创建，打开和关闭，文件属性修改，文件访问权限修改等等</li>
-<li>exec.c。实现对二进制可执行文件和shell脚本文件的加载和执行。主要函数do_execve()。</li>
-<li>fcntl.c。实现了系统调用fcntl()和dup()等。</li>
-<li>ioctl.c。实现了输入输出控制系统调用ioctl()。主要调用tty_ioctl()函数，对中断的IO进行控制。</li>
-<li>stat.c。 实现了文件状态信息系统调用stat()和fstat()。stat是利用文件名提取信息，而fstat是利用文件描述符提取信息</li>
-</ol>
-<h3 id="待整理"><a href="#待整理" class="headerlink" title="待整理"></a>待整理</h3><p>Linux0.11中，最多可以加载8个文件系统，因为其超级块数组的大小为8.</p>
-<p>超级块表在super.c的mount_root()函数中被初始化，</p>
-<p>read_super()会为新加载的文件系统在超级块表中设置一个超级块项</p>
-<p>put_super()函数会释放超级块表中的超级块项目</p>
-<p>逻辑块位图用于描述每个数据块的实用情况，除了第一个比特位外，逻辑块位图的每个比特位<br>依次代表数据区中的一个逻辑块。因此，逻辑块位图的比特位1代表了盘上数据区中第一个数据块，<br>而不是第一个磁盘块。当一个数据块被使用的时候，逻辑块位图中相应的比特位被置位，由于所有<br>磁盘数据块都被占用的时候，查找空闲数据块的函数返回0值，因此逻辑块位图的第一个比特位闲置<br>不用，并且在创建文件系统的时候会预先将其设置为1.</p>
-<p>从逻辑块的结构可以看出，逻辑块位图最多使用8个缓冲区块，每个缓冲区块的大小事1024字节，每个比特<br>表示了一个盘块，因此一个缓冲区块可以代表8192个盘块，8个缓冲区块总共可以表示65536个盘块，<br>一个盘块的大小事1K,因此Linux0.11中所能支持的最大设备容量是64MB。</p>
-<p>inode位图用于说明inode是否被使用，同样是每个比特位代表一个inode。对于1k大小的盘块来讲，一个盘块<br>就可以表示8192个inode的使用情况，具体情况与逻辑块类似。</p>
-<p>盘上的inode存放着文件系统中文件或者目录名的索引节点，每个文件或者目录名都有一个inode。每个inode结构<br>存放着对应文件的相关信息，文件的uid，gid，文件长度，访问修改时间，文件数据块在盘上的位置等，整个结构占用<br>32个字节。</p>
-<p>文件系统目录项结构。定义在include/linux/fs.h中，在文件系统的一个目录中，其中所有文件名信息对应的目录项存储在<br>该目录文件名文件的数据块中。例如，目录名root/下所有文件名的目录项就保存在root/目录名文件的数据块中。而文件系统<br>根目录下的所有文件名信息则保存在指定inode的数据块中。其数据结构称为dir_entry。<br>每个目录项保存一个长度为14字节的文件名和该文件名对应的2字节的inode号码。因此一个逻辑磁盘块可以保存1024/16=64个目录项。<br>有关文件的其他信息则被保存在该inode号指定的inode结构之中。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2103,7 +2092,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2125,7 +2114,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
