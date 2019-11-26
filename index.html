@@ -363,40 +363,16 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，<br>以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存<br>最近使用的inode数据。</p>
-<p>对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码绘制的，里面包含了超级块和inode的一些细节，以及在挂载过程中使用到的函数。</p>
-<p><img src="/images/linux-kernel/mount.png" alt></p>
-<h3 id="关于缓冲头和缓冲区的介绍"><a href="#关于缓冲头和缓冲区的介绍" class="headerlink" title="关于缓冲头和缓冲区的介绍"></a>关于缓冲头和缓冲区的介绍</h3><p>在linux0.11版本的内核中，当内核从文件系统中读取到了指定块的数据之后，会将其缓冲在高速缓冲区中，而缓冲区头的作用就是标记其指向的缓冲区属于哪个设备的哪个数据块。</p>
-<p>在我们挂载文件系统的过程中，必然涉及到了这些内容，所以这里实现提一下。</p>
-<h3 id="根目录的挂载流程"><a href="#根目录的挂载流程" class="headerlink" title="根目录的挂载流程"></a>根目录的挂载流程</h3><p>在linux内核启动的时候，必然要对根目录/进行挂载，其挂载流程如下：</p>
-<ol>
-<li><p>初始化超级块数组。同时初始化了文件数组（这个不是很理解）</p>
-</li>
-<li><p>使用read_super函数读取根设备的超级块数据，并放置在超级块数组的第一项中</p>
-</li>
-<li><p>使用iget函数读取根设备的第一个inode,并将其存放在inode数组的第一项中</p>
-</li>
-<li><p>更新inode的引用计数，保证该inode不会被其他进程回收。</p>
-</li>
-<li><p>将该super block的s_isup和s_imount为该inode，表示该superblock是根super_block并且其挂载点是该inode</p>
-</li>
-<li><p>将启动进程的root工作更新为该inode，将启动进程的当前工作目录更新为该inode。</p>
-</li>
-<li><p>打印一些与根目录元数据相关的信息</p>
-</li>
-<li><p>挂载结束</p>
-</li>
-</ol>
-<h3 id="其他文件系统的挂载分析"><a href="#其他文件系统的挂载分析" class="headerlink" title="其他文件系统的挂载分析"></a>其他文件系统的挂载分析</h3><p>我们很容易可以推出其他文件系统的挂载流程，与根文件系统的挂载如出一辙，不同的是，被挂载文件系统super_block的s_isup不会被置位，表示其不是根文件系统</p>
-<h3 id="关于文件打开过程中的疑问"><a href="#关于文件打开过程中的疑问" class="headerlink" title="关于文件打开过程中的疑问"></a>关于文件打开过程中的疑问</h3><p>分析mount流程的动力在于，在我们去打开一个mount目录的文件的时候，内核中的执行流程如何对其进行判断，答案是置换。文件打开的流程分析：</p>
-<ol>
-<li>从根inode或者进程的当前工作目录inode开始，向下查找inode。</li>
-<li>当遇到一个挂载点inode(通过inode的i_mount属性判断)，内核在超级块数组中查找挂载在该inode的超级块，获取到超级块的dev设备号</li>
-<li>从对应设备号的设备读取第一个inode，替换为挂载点inode，就完成了mount点的转换。</li>
-</ol>
-<p>当然，在上述过程中，遇到问题需要报错，遇到可以缓存的可以缓存，这里仅仅叙述了主要执行流程。</p>
-
-          
+          概述在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存最近使用的inode数据。
+对于
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/22/linux0-11中的mount工作流程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -536,39 +512,16 @@
       
         
           
-            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>git作为非常有用的开发工具，值得每个开发人员熟练掌握，并且，对于git的掌握越深入，对我们的开发工作就越有利。本片文章，<br>是我日常使用git时的一些记录，并且会时常更新，如果已经记录过的命令，有了遗忘，我会在该命令下记录再次学习的时间，并且学习次数+1。</p>
-<h3 id="git-diff"><a href="#git-diff" class="headerlink" title="git diff"></a>git diff</h3><p>git diff命令是用来对比文件差异的，可以使工作目录与索引库，仓库以及各个提交版本的不同，主要使用方法：</p>
-<ol>
-<li>git diff filename。 工作目录和索引库异同。</li>
-<li>git diff –staged filename。 索引库和仓库的异同。</li>
-<li>git diff HEAD filename。 工作目录和仓库的异同。</li>
-</ol>
-<p>除此之外，我们也可以比较不同提交之间的差异</p>
-<p>学习时间：<br>2019/11/18 13:55<br>复习次数：1</p>
-<h3 id="修改远程分支名称"><a href="#修改远程分支名称" class="headerlink" title="修改远程分支名称"></a>修改远程分支名称</h3><ol>
-<li><p>git push –delete origin branch-name  删除远程分支</p>
-</li>
-<li><p>git branch -m branch-name new-branch-name 修改本地分支名称</p>
-</li>
-<li><p>git push origin new-branch-name 将新的分支名称推送到远程</p>
-</li>
-</ol>
-<p>由于输入失误，将分支名称写错了，同时本人略带强迫症，因此从网上找了相关教程，将远程分支名称做了修改。</p>
-<p>学习时间：<br>2019/11/19 16:27<br>复习次数：1</p>
-<h3 id="基于远程新分支创建本地分支"><a href="#基于远程新分支创建本地分支" class="headerlink" title="基于远程新分支创建本地分支"></a>基于远程新分支创建本地分支</h3><p>方法一：</p>
-<ol>
-<li>git fetch</li>
-<li>git checkot -b branch-name origin/branch-name</li>
-</ol>
-<p>方法二(未经检验)：</p>
-<ol>
-<li>git fetch orgin remote-branch-name:local-branch-name</li>
-<li>git checkout local-branch-name</li>
-</ol>
-<p>我使用了方法一，未检验方法二，还有其他的方式，不过一般来说，这两种方法就够用了。</p>
-<p>学习时间：<br>2019/11/19 16:34<br>复习次数：1</p>
-
-          
+          介绍git作为非常有用的开发工具，值得每个开发人员熟练掌握，并且，对于git的掌握越深入，对我们的开发工作就越有利。本片文章，是我日常使用git时的一些记录，并且会时常更新，如果已经记录过的命令，有了遗忘，我会在该命令下记录再次学习的时间，并且学习次数+1。
+git diffgit diff命令是用
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/18/git使用技巧记录——日常更新/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -708,30 +661,15 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在各种新技术的教程中，看到了服务启动从service apache2 start变到了systemctl start apache2.service，心中充满了疑惑，这是什么东西？<br>通过浏览各种博客，我下了一个初步的结论，service service-name start我不需要做过多的了解了，但是，systemctl start service-name.service，<br>作为未来一段时间的主流，我需要有一个透彻的理解。本文，也是我在学习systemd过程中，各种资源的整理，和自我理解的归纳。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">Systemd 入门教程：命令篇</a><br><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html" target="_blank" rel="noopener">Systemd 入门教程：实战篇</a></p>
-<p>以上为阮一峰写的systemd的相关教程，我个人认为写的非常好，基本上解答了我需要的systemd的基础知识。在此基础上，在网上随意找到一篇自定义systemd<br>的教程，基本上就理解了systemd的基本内容了。</p>
-<h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><p>大概梳理一下systemd服务的几个关键点：</p>
-<ol>
-<li>/lib/systemd/system目录。一般来说，该目录下包含了系统中所有的可用的systemd风格的服务配置文件。也就是说，在该文件夹下有了一个有效的<br>service-name.service文件，我们就可以使用systemctl start service-name.service等命令来操控相关的服务了。</li>
-<li>/etc/systemd/system目录。一般来说，该目录下配置了可以开机启动的服务，也就是1中服务文件的软连接。比如1中的service-name.servie服务文件，<br>我们使用systemctl enable service-name.service就可以在/etc/systemd/system文件夹下创建对应的软连接，进而可以完成开机启动</li>
-<li>服务配置文件的格式。一般来说，service配置文件都是以.service结尾的，内容分为三部分[Unit]小结，[Service]小结和[Install]小结。<ol>
-<li>Unit小结主要是声明该服务的依赖，被依赖及其他与外部服务的交互关系内容</li>
-<li>Service小结主要是服务本身的相关配置内容，如何启动，如何停止等等</li>
-<li>Install小结，如何安装，这涉及到target类型的unit</li>
-</ol>
-</li>
-<li>target是什么? target是和service一样，是systemd中unit的一种，不过target是用来将一组unit组织到一起统一管理的。 <ol>
-<li>target定义了一个服务组，什么意思？就是定义了一组同时启动的服务整体。</li>
-<li>test-target.target为例，假设我们在3中service-name.service的Install小结中定义了WantedBy=test-target.target，那么我们的使用systemctl enable service-name.service之后，会发现systemd会在/etc/systemd/systemd/test-target.target.wants目录下建立service-name.service的软连接，这和第2点中也相互呼应。</li>
-<li>调用systemct start test-target.target，systemd 就会自动的启动service-name服务</li>
-</ol>
-</li>
-<li>其他unit。除了service，target之外，还有其他的unit，比如device，mount,auotmount，timer等等，种类很多，但是基本上和service类似，如果需要使用，则可以<br>做针对性学习</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这里特意学习systemd，导火索是在看containerd文档时，涉及到了systemd相关内容，但是又一知半解，索性放开containerd，先补一下systemd的相关知识。<br>这个仓库的<a href="https://github.com/xdushepherd91/systemd-test" target="_blank" rel="noopener">代码</a>是我在学习service和target的时候的一些练习代码，仅供参考</p>
-
-          
+          概述在各种新技术的教程中，看到了服务启动从service apache2 start变到了systemctl start apache2.service，心中充满了疑惑，这是什么东西？通过浏览各种博客，我下了一个初步的结论，service service-name start我不需要做过多的了解了，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/11/systemd学习笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -871,44 +809,20 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>本篇文章之所以位于docker目录，是因为是在学习docker底层原理的过程中，涉及到了grpc框架，需要对该框架有一个完整的了解。<br>本文基本上是对<a href="https://grpc.io/docs/guides/" target="_blank" rel="noopener">grpc官方文档</a>的一个总结归纳，没有新鲜的东西。</p>
-<p>主要包括以下一些内容：</p>
-<ol>
-<li>gRPC</li>
-<li>buffers.gRPC协议</li>
-<li>Interface Definition Language（IDL）</li>
-<li>消息交换格式</li>
-</ol>
-<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>使用gRPC框架，你可以在一个客户端程序中直接调用位于另一个机器上的方法，就好像在调用一个本地方法一样，这使得我们可以很容易创建一个分布式的应用程序<br>和服务。</p>
-<p>和其他的rpc系统一样，gRPC也是继续以下一些事实：</p>
-<p>一、  </p>
-<ol>
-<li>定义一个服务</li>
-<li>声明可以被远程调用的方法的参数和返回类型</li>
-</ol>
-<p>二、在服务端  </p>
-<ol>
-<li>实现我们已经定义好的接口</li>
-<li>启动一个gRPC服务来处理来自客户端的调用请求</li>
-</ol>
-<p>三、在客户端  </p>
-<ol>
-<li>在客户端有一个存根（某些语言中称之为客户端）同样提供了这些方法</li>
-</ol>
-<p><img src="/images/gRPC/1.svg" alt="title"></p>
-<h3 id="Protocol-Buffers"><a href="#Protocol-Buffers" class="headerlink" title="Protocol Buffers"></a>Protocol Buffers</h3><p>默认情况下，gRPC使用Google开源用于序列化数据的第三方库。下面是一个对其工作机制的快速介绍。</p>
-<p>第一步，自己新建一个扩展名为.proto的文本文件中定义一个你想要序列化的数据格式。示例如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Person &#123;</span><br><span class="line">  <span class="keyword">string</span> name = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">int32</span> id = <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">bool</span> has_ponycopter = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          概述本篇文章之所以位于docker目录，是因为是在学习docker底层原理的过程中，涉及到了grpc框架，需要对该框架有一个完整的了解。本文基本上是对grpc官方文档的一个总结归纳，没有新鲜的东西。
+主要包括以下一些内容：
 
-<p>第二步，在定义了数据结构之后，使用protocol buffer提供的编译工具protoc来生成指定语言的数据类，对于上面的定义，可以生成一个名为Person的类。</p>
-<p>更进一步的，你可以在proto文件中定义服务，方法，入参，返参等等</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The greeter service definition.</span></span><br><span class="line">service Greeter &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user's name.</span></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  <span class="keyword">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line">message HelloReply &#123;</span><br><span class="line">  <span class="keyword">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">`</span></span><br></pre></td></tr></table></figure>
-
-<p>上述文件也可以使用protoc来生成对应的文件。</p>
-<h4 id="协议版本"><a href="#协议版本" class="headerlink" title="协议版本"></a>协议版本</h4><p>protocol buffer是有多个版本的，不同版本的语法可能有不同。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://grpc.io/docs/guides/" target="_blank" rel="noopener">入门指南</a><br><a href="https://grpc.io/docs/guides/concepts/" target="_blank" rel="noopener">核心概念</a><br><a href="https://grpc.io/docs/quickstart/go/" target="_blank" rel="noopener">gRPC示例go语言版本</a></p>
-
-          
+gRPC
+buffers.gRPC协议
+Interface Definit
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/08/grpc入门手册学习/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1059,49 +973,15 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>去年八月份左右，曾经做了一段时间的k8s部署相关的工作，因此对docker具有一定的使用基础并大致了解其相关概念。<br>最近一周开始看docker源码，这里对其做一些总结和资料汇总。在docker1.9这个版本里面，关于容器启动和运行的核心代码<br>已经被抽离到了containerd和runC之中了。当然，这是在我开始阅读docker源代码的时候，所不知道的，关于containerd和runC的相关<br>介绍，见文末。</p>
-<p><a href="https://ericchiang.github.io/post/containers-from-scratch/" target="_blank" rel="noopener">从零手动创建一个容器</a></p>
-<h3 id="源码结构"><a href="#源码结构" class="headerlink" title="源码结构"></a>源码结构</h3><p>go语言相关的项目结构，相对是比较自由的。从github上clone下来的docker-ce仓库中，主要有一个components子目录，该子目录下有两个关键的子目录：</p>
-<ol>
-<li>cli子目录。这个目录是docker client相关的代码。</li>
-<li>engine子目录。这个目录是docker engine相关的代码。<br>以上两个子目录中都有如下路径的go文件cmd/docker/docker.go，docker.go文件中包含了client和engin的主函数，我们进行代码分析的入口所在。</li>
-</ol>
-<h3 id="架构及相关第三方类库介绍"><a href="#架构及相关第三方类库介绍" class="headerlink" title="架构及相关第三方类库介绍"></a>架构及相关第三方类库介绍</h3><p>首先，我们必须明确，docker是一个c/s架构的开源项目，对于  docker run -it –name newos docker.io/centos 这样一条命令，实际的执行流程如下：</p>
-<ol>
-<li>docker client 从主函数开始，解析函数命令及相关参数。</li>
-<li>docker client 根据命令及入参构造请求地址及请求参数并向docker engine中的指定服务地址发出请求</li>
-<li>docker engine 根据入参地址调用对应的处理方法。</li>
-<li>docker engine 的处理方法根据入参是用containerd的客户端引用创建容器，创建容器任务，启动容器等等</li>
-</ol>
-<p>对于docker client，主要涉及了如下两个第三方类库，用于命令行参数解析和运行，需要自行去运行官方demo即可。<br><a href="https://github.com/spf13/cobra" target="_blank" rel="noopener">cobra</a>，该类库用于创建POSIX兼容的命令行工具。<br><a href="https://github.com/spf13/pflag" target="_blank" rel="noopener">pflag</a>，该类库用于解析命令行参数。<br>基本上docker client就是如此简单，解析命令行参数构建请求url，使用官方类库发出http请求等等。</p>
-<p>对于docker engine，主要涉及了包括cobra，pflag在内的多个类库，具体如下：<br><a href="https://github.com/gorilla/mux" target="_blank" rel="noopener">mux</a>,该类库用于请求路由工作。<br><a href="https://containerd.io/docs/getting-started/" target="_blank" rel="noopener">containerd</a>,由docker官方开源的类库。<br><a href="https://github.com/opencontainers/runc" target="_blank" rel="noopener">runC</a>,有docker官方开源的容器运行时类库。</p>
-<h3 id="docker-engine源码关键点总结"><a href="#docker-engine源码关键点总结" class="headerlink" title="docker engine源码关键点总结"></a>docker engine源码关键点总结</h3><h4 id="启动过程要点"><a href="#启动过程要点" class="headerlink" title="启动过程要点"></a>启动过程要点</h4><p>docker engine的启动过程包括如下一些关键点：</p>
-<ol>
-<li>根据命令启动，使用到cobra相关知识。</li>
-<li>需要启动http监听接口，并使用mux进行请求路由工作。</li>
-<li>需要启动containerd服务及客户端。</li>
-</ol>
-<p>其他，docker1.9中的源代码中关于配置的结构体比较多，不知道是重构的遗留还是官方刻意为之，总之看起来比较绕，<br>不过耐心的总结，还是可以形成概念的。</p>
-<h4 id="请求处理"><a href="#请求处理" class="headerlink" title="请求处理"></a>请求处理</h4><p>docker engine的主要工作就是处理请求，和其他的web服务器一样，根据请求地址路由到<br>相应的处理方法，如果为容器相关操作，那么就需要涉及到containerd相关调用，这又需要对containerd有一定的了解。</p>
-<h3 id="容器核心概念资源分享"><a href="#容器核心概念资源分享" class="headerlink" title="容器核心概念资源分享"></a>容器核心概念资源分享</h3><p>先来点题外话，我在docker源码阅读过程中，有如下收获：</p>
-<ol>
-<li>对刚刚学习的go语言有了更进一步地认识。</li>
-<li>对go语言的类库有了新的认识。</li>
-<li>对linux底层有了更进一步认识。</li>
-</ol>
-<p>我们都知道docker的关键技术有namespace，cgroup，unionFS等，但是很多又是泛泛而谈的，talk is cheap，show me the code！<br>下面列举了一些我在研究docker源码过程中比较有收获的一些博客：</p>
-<ol>
-<li><p>namespace。<a href="https://www.jianshu.com/p/353eb8d8eb05" target="_blank" rel="noopener">Docker基础技术-Linux Namespace</a>,该博客对namespace做了详细的介绍，并且<br>对每一种namespace都提供了c语言代码来进行实践，我们只需要按照代码一步步实践，就可以对docker源码对namespace的应用有一个切实的了解。<br><a href="https://github.com/shishujuan/docker-basis" target="_blank" rel="noopener">代码地址</a>。如果不幸，链接不存在，可以在我的备份中找到：<br>文章备份可以联系我，备份于onenote。<br><a href="https://github.com/xdushepherd91/docker-basis" target="_blank" rel="noopener">代码备份</a></p>
-</li>
-<li><p>unionFS。关于unionFS的内容，在我的博客<a href="https://xdushepherd91.github.io/2019/11/05/overlayFS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">docker底层原理————overlayFS介绍与实践</a>，中有一定的介绍，相信大家看了之后，会有一定的收获。</p>
-</li>
-<li><p>cgroup。<a href="https://www.jianshu.com/p/b02bf3b3f265" target="_blank" rel="noopener">Docker之Linux Cgroup实践</a>。Linux Cgroup最主要的作用是为一个进程组设置资源使用的上限，这些资源包括CPU、内存、磁盘、网络等。在linux中，Cgroup给用户提供的操作接口是文件系统，其以文件和目录的方式组织在/sys/fs/cgroup路径下。<br><a href="https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt" target="_blank" rel="noopener">linux内核cgroups介绍</a><br><a href="https://tech.meituan.com/2015/03/31/cgroups.html" target="_blank" rel="noopener">Linux资源管理之cgroups简介</a><br><a href="https://coolshell.cn/articles/17049.html" target="_blank" rel="noopener">左耳朵耗子</a></p>
-</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>很遗憾，在docker-ce的源码中，没有看到底层cgroup，namespace，unionFS相关的代码，这些更底层的代码已经被移动到了containerd代码库中，<br>不过，在阅读docker-ce源码的过程中，通过实际操作网络上的相关资源，我对docker底层实现有了更深入的了解，后续，我会对containerd项目的<br>源代码进行阅读分析和分享</p>
-<p>福利，一个书写有些混乱，但是干货满满的博客:<a href="https://www.jianshu.com/p/ef41503b8f87" target="_blank" rel="noopener">Docker底层技术</a></p>
-
-          
+          概述去年八月份左右，曾经做了一段时间的k8s部署相关的工作，因此对docker具有一定的使用基础并大致了解其相关概念。最近一周开始看docker源码，这里对其做一些总结和资料汇总。在docker1.9这个版本里面，关于容器启动和运行的核心代码已经被抽离到了containerd和runC之中了。当然，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/06/docker底层原理及相关资源链接分享/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1241,31 +1121,16 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在docker底层原理的学习过程中，接触到了UnionFS的概念。</p>
-<p>UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：<br>假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。<br>我们通过创建一个文件夹C，并且使用UnionFS，使得我们可以再C文件夹下可以直接访问a1,a2,a3,b1,b2,b3。<br>这样我们就把A文件夹和B文件夹联合起来了。</p>
-<p>当然，在实际的实现过程中，概念会更多。</p>
-<p>UnionFS的实现是比较多的，目前docker中使用的UnionFS的实现是overlay2，而我在网上找到的相关资料并不多，<br>处于好奇，专门对其进行了一些实际操作，并记录下来。</p>
-<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>overlayFS允许一个可读写的目录覆盖在多个只读的目录之上，这些目录就构成了多个层(layer)，而当我们在联合起来的目录中工作的时候，<br>我们所有的写入操作最终都进入了最上层的读写层目录中，这一点我后续会通过命令展示。</p>
-<p>overlayFS与其他的unionFS的实现最终要的不同在于，当一个文件打开之后，所有的操作都直接和底层的文件系统打交道，这样可以保证操作的<br>性能。</p>
-<p>在Linux kernel 3.18之后，overlayFS已经集成到内核中去了。我们在该版本之后的Linux内核中，不需要安装，就可以开始使用overlayFS了。</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="可读写的联合文件系统"><a href="#可读写的联合文件系统" class="headerlink" title="可读写的联合文件系统"></a>可读写的联合文件系统</h4><p>我们使用如下命令来挂在一个overlay文件系统</p>
-<p>mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged</p>
-<p>其中，</p>
-<ol>
-<li>lowerdir的值可以是一些的文件夹列表，使用:分开,这些事只读层。</li>
-<li>merged文件夹是最终联合起来的文件系统，我们可以在merged文件夹中访问所有lowerdir和upperdir中的内容</li>
-<li>在merged文件夹所做的所有修改，最终都会存储到upperdir目录中</li>
-<li>workdir指定的目录需要和upperdir位于同一目录中</li>
-<li>文件的覆盖顺序，upperdir目录拥有最高覆盖权限，lowerdir按照mount时从左到右的顺序，权重依次降低，左边的覆盖右边的同名文件或者文件夹。<br>注意，覆盖仅仅在mount时按照此顺序，一旦mount成功后，按照文件出现的早晚覆盖，出现早的会屏蔽出现晚的同名文件。除非修改是在merged目录中进行。</li>
-</ol>
-<h4 id="开机自动挂载"><a href="#开机自动挂载" class="headerlink" title="开机自动挂载"></a>开机自动挂载</h4><p>在/etc/fstab中实现自动挂载的格式如下，本人暂未实践</p>
-<p>overlay /merged overlay noauto,x-systemd.automount,lowerdir=/lower,upperdir=/upper,workdir=/work 0 0</p>
-<h4 id="只读联合文件系统"><a href="#只读联合文件系统" class="headerlink" title="只读联合文件系统"></a>只读联合文件系统</h4><p>mount -t overlay overlay -o lowerdir=/lower1:/lower2 /merged</p>
-<h3 id="overlayFS相关演示"><a href="#overlayFS相关演示" class="headerlink" title="overlayFS相关演示"></a>overlayFS相关演示</h3><p><img src="/images/overlay/1.png" alt><br><img src="/images/overlay/2.png" alt><br><img src="/images/overlay/3.png" alt><br><img src="/images/overlay/4.png" alt><br><img src="/images/overlay/5.png" alt></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>overlayFS可以在多种应用场合中使用，我们这里关注在docker中的使用方式。<br>在docker中个，多个镜像可以看做是多个lowerdir，只读层，当我们启动一个容器的时候，使用overlayFS将多个镜像<br>联合挂载到一个目录，并使得容器中可以对目录中的文件进行读写操作，但读写操作仅仅会影响到当前容器的upperdir和<br>当前目录，并不会影响到镜像中的数据。</p>
-<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.jianshu.com/p/47c4a06a84a4" target="_blank" rel="noopener">Docker技术三大要点：cgroup, namespace和unionFS的理解</a><br><a href="https://wiki.archlinux.org/index.php/Overlay_filesystem" target="_blank" rel="noopener">Overlay filesystem</a><br><a href="https://blog.csdn.net/songcf_faith/article/details/82787946" target="_blank" rel="noopener">Docker技术原理之Linux UnionFS（容器镜像）</a></p>
-
-          
+          概述在docker底层原理的学习过程中，接触到了UnionFS的概念。
+UnionFS，顾名思义，是联合文件系统的意思。那怎么个联合法呢？举个简单的例子：假设，我们有两个文件夹A和文件夹B，A文件夹下有文件a1,a2,a3,B文件夹下有文件b1，b2，b3。我们通过创建一个文件夹C，并且使用Unio
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/05/overlayFS介绍与实践/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1383,13 +1248,20 @@
       
         
           
-            <h3 id="暂时记住"><a href="#暂时记住" class="headerlink" title="暂时记住"></a>暂时记住</h3><ol>
-<li>在Linux0.11版本中，代码段和数据段的基地址是相等的</li>
-<li>当新建一个进程的时候，其代码段和数据段的基地址为nr * 0x4000000，其中<br>nr为任务号，这就保证了不同任务之间的内存隔离。</li>
-<li></li>
-</ol>
-<h3 id="copy-page-tables"><a href="#copy-page-tables" class="headerlink" title="copy_page_tables"></a>copy_page_tables</h3>
+          暂时记住
+在Linux0.11版本中，代码段和数据段的基地址是相等的
+当新建一个进程的时候，其代码段和数据段的基地址为nr * 0x4000000，其中nr为任务号，这就保证了不同任务之间的内存隔离。
+
+
+copy_page_tables
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/15/Linux0-11内核中fork系统调用实现代码分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1507,36 +1379,16 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在阅读Linux0.11源代码的过程中，在init函数的执行过程中遇到了execve系统调用，对其实现不甚理解，<br>因此特地阅读其实现代码，深入理解其代码背后的底层执行过程。</p>
-<p>该系统调用在system_call.s中的实现代码比较短，如下，但是其中调用了_do_execve函数，该函数在<br>kernel/exec.c中实现，后面主要关注该函数的实现</p>
-<figure class="highlight as"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">align <span class="number">4</span></span><br><span class="line">_sys_execve:</span><br><span class="line">	lea eax,[R_EIP+esp]</span><br><span class="line">	push eax</span><br><span class="line">	call _do_execve</span><br><span class="line">	add esp,<span class="number">4</span> ;<span class="comment">// 丢弃调用时压入栈的R_EIP 值。</span></span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
-
-<h3 id="do-execve"><a href="#do-execve" class="headerlink" title="do_execve"></a>do_execve</h3><p>我们不关注该函数起始部分的一些变量声明行为，该函数的执行功能表述如下：</p>
-<ol>
-<li>为进程初始化一个长度为32的页表</li>
-<li>根据传入的filename信息，获取其inode信息，出错返回。</li>
-<li>计算命令行参数个数和环境变量参数。</li>
-<li>判断inode是否为一个常规文件，不是则返回出错信息。</li>
-<li>检查inode用户相关权限信息，没有执行权限则出错返回。</li>
-<li>前述执行通过，读取inode的第一块数据到缓冲区内，出错要返回。</li>
-<li>读取可执行文件的头部数据结构，该数据结构的类型exec定义在a.out.h中。</li>
-<li>判断程序文件的开头是否为#!，如果是，则需要进一步处理。</li>
-<li>对7中读取的可执行文件头进行判断</li>
-<li>将当前进程任务结构体的executable设置为程序文件的inode。</li>
-<li>设置当前任务结构的sigaction的句柄设置为null。</li>
-<li>释放程序代码段和数据段对应的页表</li>
-<li>处理协处理器相关内容</li>
-<li>在ldt局部描述符表中设置代码段基地址和段限长等等</li>
-<li>创建环境之参数变量指针表</li>
-<li>设置进程堆栈指针所在页面为堆栈指针所在页面</li>
-<li>初始化bss段</li>
-<li>将程序计数器指向本程序开始的代码</li>
-<li>将堆栈指针设置为本程序堆栈段开始的地方。</li>
-</ol>
-<h3 id="待整理"><a href="#待整理" class="headerlink" title="待整理"></a>待整理</h3><p>change_ldt</p>
-<p>create_tables</p>
-
-          
+          概述在阅读Linux0.11源代码的过程中，在init函数的执行过程中遇到了execve系统调用，对其实现不甚理解，因此特地阅读其实现代码，深入理解其代码背后的底层执行过程。
+该系统调用在system_call.s中的实现代码比较短，如下，但是其中调用了_do_execve函数，该函数在kernel
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/14/Linux0-11源代码中的execve函数实现源代码分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1676,56 +1528,16 @@
       
         
           
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>上一篇涉及到了main函数在fork任务1之前的一些行为，由于任务1执行的init函数涉及内容较多，因此将其内容移动<br>到本篇来继续分析。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> pid,i;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取硬盘参数包括分区表信息并建立虚拟盘和安装根文件系统设备。</span></span><br><span class="line"><span class="comment">// 该函数是在25 行上的宏定义的，对应函数是sys_setup()，在kernel/blk_drv/hd.c。</span></span><br><span class="line">	setup((<span class="keyword">void</span> *) &amp;drive_info);</span><br><span class="line"></span><br><span class="line">	(<span class="keyword">void</span>) open(<span class="string">"/dev/tty0"</span>,O_RDWR,<span class="number">0</span>);	<span class="comment">// 用读写访问方式打开设备“/dev/tty0”，</span></span><br><span class="line">										<span class="comment">// 这里对应终端控制台。</span></span><br><span class="line">										<span class="comment">// 返回的句柄号0 -- stdin 标准输入设备。</span></span><br><span class="line">	(<span class="keyword">void</span>) dup(<span class="number">0</span>);		<span class="comment">// 复制句柄，产生句柄1 号-- stdout 标准输出设备。</span></span><br><span class="line">	(<span class="keyword">void</span>) dup(<span class="number">0</span>);		<span class="comment">// 复制句柄，产生句柄2 号-- stderr 标准出错输出设备。</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d buffers = %d bytes buffer space\n\r"</span>,NR_BUFFERS, \</span><br><span class="line">		NR_BUFFERS*BLOCK_SIZE);	<span class="comment">// 打印缓冲区块数和总字节数，每块1024 字节。</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Free mem: %d bytes\n\r"</span>,memory_end-main_memory_start);<span class="comment">//空闲内存字节数。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 下面fork()用于创建一个子进程(子任务)。对于被创建的子进程，fork()将返回0 值，</span></span><br><span class="line"><span class="comment">// 对于原(父进程)将返回子进程的进程号。所以if (!(pid=fork())) &#123;...&#125; 内是子进程执行的内容。</span></span><br><span class="line"><span class="comment">// 该子进程关闭了句柄0(stdin)，以只读方式打开/etc/rc 文件，并执行/bin/sh 程序，所带参数和</span></span><br><span class="line"><span class="comment">// 环境变量分别由argv_rc 和envp_rc 数组给出。参见后面的描述。</span></span><br><span class="line">	<span class="keyword">if</span> (!(pid=fork())) &#123;</span><br><span class="line">		close(<span class="number">0</span>);</span><br><span class="line">		<span class="keyword">if</span> (open(<span class="string">"/etc/rc"</span>,O_RDONLY,<span class="number">0</span>))</span><br><span class="line">			_exit(<span class="number">1</span>);	<span class="comment">// 如果打开文件失败，则退出(/lib/_exit.c)。</span></span><br><span class="line">		execve(<span class="string">"/bin/sh"</span>,argv_rc,envp_rc);	<span class="comment">// 装入/bin/sh 程序并执行。(/lib/execve.c)</span></span><br><span class="line">		_exit(<span class="number">2</span>);	<span class="comment">// 若execve()执行失败则退出(出错码2,“文件或目录不存在”)。</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 下面是父进程执行的语句。wait()是等待子进程停止或终止，其返回值应是子进程的</span></span><br><span class="line"><span class="comment">// 进程号(pid)。这三句的作用是父进程等待子进程的结束。&amp;i 是存放返回状态信息的</span></span><br><span class="line"><span class="comment">// 位置。如果wait()返回值不等于子进程号，则继续等待。</span></span><br><span class="line">	<span class="keyword">if</span> (pid&gt;<span class="number">0</span>)</span><br><span class="line">		<span class="keyword">while</span> (pid != wait(&amp;i))</span><br><span class="line">		&#123;	<span class="comment">/* nothing */</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// --</span></span><br><span class="line"><span class="comment">// 如果执行到这里，说明刚创建的子进程的执行已停止或终止了。下面循环中首先再创建</span></span><br><span class="line"><span class="comment">// 一个子进程，如果出错，则显示“初始化程序创建子进程失败”的信息并继续执行。对</span></span><br><span class="line"><span class="comment">// 于所创建的子进程关闭所有以前还遗留的句柄(stdin, stdout, stderr)，新创建一个</span></span><br><span class="line"><span class="comment">// 会话并设置进程组号，然后重新打开/dev/tty0 作为stdin，并复制成stdout 和stderr。</span></span><br><span class="line"><span class="comment">// 再次执行系统解释程序/bin/sh。但这次执行所选用的参数和环境数组另选了一套（见上面）。</span></span><br><span class="line"><span class="comment">// 然后父进程再次运行wait()等待。如果子进程又停止了执行，则在标准输出上显示出错信息</span></span><br><span class="line"><span class="comment">//		“子进程pid 停止了运行，返回码是i”，</span></span><br><span class="line"><span class="comment">// 然后继续重试下去…，形成“大”死循环。</span></span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> ((pid=fork())&lt;<span class="number">0</span>) &#123;</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">"Fork failed in init\r\n"</span>);</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (!pid) &#123;</span><br><span class="line">			close(<span class="number">0</span>);close(<span class="number">1</span>);close(<span class="number">2</span>);</span><br><span class="line">			setsid();</span><br><span class="line">			(<span class="keyword">void</span>) open(<span class="string">"/dev/tty0"</span>,O_RDWR,<span class="number">0</span>);</span><br><span class="line">			(<span class="keyword">void</span>) dup(<span class="number">0</span>);</span><br><span class="line">			(<span class="keyword">void</span>) dup(<span class="number">0</span>);</span><br><span class="line">			_exit(execve(<span class="string">"/bin/sh"</span>,argv,envp));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">			<span class="keyword">if</span> (pid == wait(&amp;i))</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"\n\rchild %d died with code %04x\n\r"</span>,pid,i);</span><br><span class="line">		sync();</span><br><span class="line">	&#125;</span><br><span class="line">	_exit(<span class="number">0</span>);	<span class="comment">/* NOTE! _exit, not exit() */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="setup"><a href="#setup" class="headerlink" title="setup"></a>setup</h3><p>该函数对应函数是sys_setup()，在kernel/blk_drv/hd.c。代码不在这里贴了。讲一下这个函数的内容：</p>
-<ol>
-<li>在全局变量hd数组中设置每个硬盘的起始扇区号和总的扇区数。</li>
-<li>读取第一个硬盘的第一个扇区，获取其中的分区表信息。</li>
-<li>rd_load函数执行。加载（创建）RAMDISK(kernel/blk_drv/ramdisk.c,71)。</li>
-<li>mount_root函数执行。// 安装根文件系统(fs/super.c,242)。</li>
-</ol>
-<h4 id="mount-root"><a href="#mount-root" class="headerlink" title="mount_root"></a>mount_root</h4><p>由于对Linux中文件系统的挂载有一个深入的接触，这里来进一步分析一下mount_root函数的调用过程吧。</p>
-<p>在分析函数之前，先来明确一下Linux中文件系统的一些概念：</p>
-<ol>
-<li>super_block。超级块。超级块用来表示一个文件系统，其内容主要包括了该文件系统的inode数目，逻辑块数，<br>inode位图所占用的数据块数，逻辑块位图所占用的的数据块数，第一个数据块等等。那么什么优势inode呢？</li>
-<li>inode。一般我们就称之为inode，不翻译。 一个inode通常来说代表了一个文件，当然也可以代表一个目录。其主要<br>内容包括文件的类型和属性，用户id，文件大小，修改时间，指向该inode的链接数以及最重要的，文件的数据块标志数组，<br>包括7个直接，1个间接和两个双重间接。</li>
-<li>对于上述两个数据结构，在硬盘中必然都有弃数据结构，同时，其在内存中的数据结构相比有硬盘数据结构都有了扩充。<br>因此Linux0.11中，分别定义了d_inode,m_inode,d_super_block和super_block四种数据结构来分别表示。</li>
-<li>对于目录，我们还需要了解数据结构dir_entry。该数据结构表示了一个目录。</li>
-<li>以上数据结构的定义位于Linux0.11源代码的include/linux/fs.h文件中。</li>
-</ol>
-<p>总结，Linux文件系统中，我们将位于磁盘上的文件系统超级块数据读取到内存中并表示为super_block。我们通过super block<br>中的inode位图可以知道哪些inode还可以使用，哪些逻辑块还可以使用，这样我们在新建文件的时候就可以通过查询super block<br>来找到可用的inode和可用的数据块，并修改super block中的位图信息。并在合适的时候将超级块的修改信息回写到硬盘中</p>
-<p>接下来我们来列举mount_root函数所做的事情</p>
-<ol>
-<li>初始化file_table全局数组。该数组大小为64，说明Linux0.11同时只能打开64个文件。</li>
-<li>初始化超级块数组。超级块数组大小为8，说明Linux0.11最多只能挂载8个文件系统。</li>
-<li>从根设备上读取超级块信息。</li>
-<li>读取根设备的第一个inode到内存中。</li>
-<li>设置该inode为mount点和根目录挂载点。</li>
-<li>设置当前进程的工作目录和根节点为第一个inode。</li>
-<li>进行一些文件系统数据的计算，并打印到控制台输出。</li>
-</ol>
-<h3 id="open"><a href="#open" class="headerlink" title="open"></a>open</h3><p>系统调用open将/dev/tty0打开设置为标准输入0，使用dup系统调用将其赋值为<br>标准输出1,和标准输出2。</p>
-<h3 id="fork及子程序执行"><a href="#fork及子程序执行" class="headerlink" title="fork及子程序执行"></a>fork及子程序执行</h3><p>init函数在调用fork之后，在任务1中使用wait系统调用进行等待，在子任务中执行以下操作：</p>
-<ol>
-<li>关闭标准输入0.</li>
-<li>以只读方式打开/etc/rc.</li>
-<li>使用execve系统调用执行/bin/sh程序。</li>
-</ol>
-<h3 id="最后一步"><a href="#最后一步" class="headerlink" title="最后一步"></a>最后一步</h3><p>init进程执行到这里的时候，就进入了循环，这就是Linux系统的常态，打开一个/bin/sh程序，开始执行，<br>当执行的sh程序推出之后，同步文件系统，再打开一个shell程序，如此往复。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> ((pid=fork())&lt;<span class="number">0</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Fork failed in init\r\n"</span>);</span><br><span class="line">		<span class="keyword">continue</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (!pid) &#123;</span><br><span class="line">		close(<span class="number">0</span>);close(<span class="number">1</span>);close(<span class="number">2</span>);</span><br><span class="line">		setsid();</span><br><span class="line">		(<span class="keyword">void</span>) open(<span class="string">"/dev/tty0"</span>,O_RDWR,<span class="number">0</span>);</span><br><span class="line">		(<span class="keyword">void</span>) dup(<span class="number">0</span>);</span><br><span class="line">		(<span class="keyword">void</span>) dup(<span class="number">0</span>);</span><br><span class="line">		_exit(execve(<span class="string">"/bin/sh"</span>,argv,envp));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">if</span> (pid == wait(&amp;i))</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\n\rchild %d died with code %04x\n\r"</span>,pid,i);</span><br><span class="line">	sync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文对init进程的行为进行了一个较为深入的分析，但是还存在以下一些系统调用需要进行进一步的分析：</p>
-<ol>
-<li>fork</li>
-<li>execve</li>
-<li>open</li>
-<li>close</li>
-</ol>
-<p>这些系统调用中后续需要对fork和execve进行分析。</p>
-
-          
+          概述上一篇涉及到了main函数在fork任务1之前的一些行为，由于任务1执行的init函数涉及内容较多，因此将其内容移动到本篇来继续分析。
+12345678910111213141516171819202122232425262728293031323334353637383940414243444
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/12/Linux-0-11内核main函数执行过程分析——2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1865,105 +1677,18 @@
       
         
           
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文在结合赵炯博士的《Linux内核0.11完全注释》和对应源代码的基础上，总结而成。</p>
-<p>Linux0.11的大致启动流程如下：</p>
-<ol>
-<li>pc机器的BIOS程序启动，开始加载硬盘中的bootsect.s对应的机器码程序到内存中，将CPU的程序计数器指向bootsect.s对应机器码<br>在内存中的起始位置，开始执行bootsect.s代码。</li>
-<li>执行bootsect.s代码的过程中，从硬盘加载了setup.s对应的机器码到程序的内存中，并跳转到setup.s机器码的开始处开始执行setup.s<br>对应机器码。setup的主要工作是将硬盘，内存等硬件的参数信息读取并放置到约定的安全位置。加载head.s和main.c共同组成的system模块<br>机器码到内存中，将程序计数器指定到system代码开头的地方，指定CPU进入保护模式工作。准备开始执行head.s代码。</li>
-<li>head.s对应的机器码主要完成全局描述符表、中断描述符表、页表等信息的内存分配工作，具体的赋值需要到后续完成。</li>
-<li>执行完head.s之后，就该执行main.c函数中的内容了，这也是本文要分析的代码内容。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">after_page_tables:</span><br><span class="line">	push 0			;// These are the parameters to main :-)</span><br><span class="line">	push 0			;// 这些是调用main 程序的参数（指init/main.c）。</span><br><span class="line">	push 0</span><br><span class="line">	push L6			;// return address for main, if it decides to.</span><br><span class="line">	push _main_rename		;// &apos;_main&apos;是编译程序对main 的内部表示方法。</span><br><span class="line">	jmp setup_paging</span><br></pre></td></tr></table></figure>
+          概述本文在结合赵炯博士的《Linux内核0.11完全注释》和对应源代码的基础上，总结而成。
+Linux0.11的大致启动流程如下：
 
-</li>
-</ol>
-<p>之所以有这一段流程分析，是为了有个上下文，因为对于好奇的同学来讲，总要问机器是怎么执行到main函数的，之前都干了什么。有了这里的上下文，<br>感兴趣的同学就可以自行去探索一下上述几个汇编程序的内容。</p>
-<p>还有一点需要说明，对于汇编语言，本身大家都学习过，在遇到不懂的助记符的时候，百度一下，很多时候都能找到答案。我的博客中也有我在看汇编代码时候<br>在网上查找到的一些汇编语言的知识记录，本身赵炯博士的书里也较为系统的介绍了一部分重要的语言特性，大家感兴趣可以看看。</p>
-<h2 id="main函数的主体内容"><a href="#main函数的主体内容" class="headerlink" title="main函数的主体内容"></a>main函数的主体内容</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">本节是Linux0<span class="number">.11</span>代码中main函数的内容，方便大家阅读添加到这里。后续的内容都是以下面这段代码为脉络的。在这里，先分析一下</span><br><span class="line">在调用mem_init函数之前做的一些工作。main函数开始的时候，主要的工作是计算高速缓冲区末端，由此将整个内存分为三个较大的部分，</span><br><span class="line">分别是内核代码区，高速缓冲区和主内存区。其中内核代码区就是内核代码放置的位置。高速缓冲区是用来进行硬盘数据缓冲的，这个区由</span><br><span class="line">缓冲区头和缓冲区块共同组成。缓冲区头是缓冲区块的元数据，用来标记对应缓冲区块是哪个硬盘的哪个扇区的数据缓冲，缓冲区块则存储了</span><br><span class="line">磁盘中多个扇区的完整数据，具体多少个扇区需要根据操作系统的设置来决定，在Linux0<span class="number">.11</span>来说，一个缓冲区块存储了<span class="number">1024</span>字节的数据，而</span><br><span class="line">一个扇区一边是<span class="number">512</span>字节的数据，因此一个缓冲区块存储了两个扇区的数据。第三部分是主内存区，就是用户程序执行过程中分配内存的地方。</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main_rename</span><span class="params">(<span class="keyword">void</span>)</span>		<span class="comment">/* 这里确实是void，并没错。 */</span></span></span><br><span class="line"><span class="function"></span>&#123;			<span class="comment">/* 在startup 程序(head.s)中就是这样假设的。 */</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 此时中断仍被禁止着，做完必要的设置后就将其开启。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	<span class="comment">// 下面这段代码用于保存：</span></span><br><span class="line">	<span class="comment">// 根设备号 -&gt; ROOT_DEV； 高速缓存末端地址 -&gt; buffer_memory_end；</span></span><br><span class="line">	<span class="comment">// 机器内存数 -&gt; memory_end；主内存开始地址 -&gt; main_memory_start；</span></span><br><span class="line"> 	ROOT_DEV = ORIG_ROOT_DEV;</span><br><span class="line"> 	drive_info = DRIVE_INFO;</span><br><span class="line">	memory_end = (<span class="number">1</span>&lt;&lt;<span class="number">20</span>) + (EXT_MEM_K&lt;&lt;<span class="number">10</span>);<span class="comment">// 内存大小=1Mb 字节+扩展内存(k)*1024 字节。</span></span><br><span class="line">	memory_end &amp;= <span class="number">0xfffff000</span>;			<span class="comment">// 忽略不到4Kb（1 页）的内存数。</span></span><br><span class="line">	<span class="keyword">if</span> (memory_end &gt; <span class="number">16</span>*<span class="number">1024</span>*<span class="number">1024</span>)		<span class="comment">// 如果内存超过16Mb，则按16Mb 计。</span></span><br><span class="line">		memory_end = <span class="number">16</span>*<span class="number">1024</span>*<span class="number">1024</span>;</span><br><span class="line">	<span class="keyword">if</span> (memory_end &gt; <span class="number">12</span>*<span class="number">1024</span>*<span class="number">1024</span>)		<span class="comment">// 如果内存&gt;12Mb，则设置缓冲区末端=4Mb</span></span><br><span class="line">		buffer_memory_end = <span class="number">4</span>*<span class="number">1024</span>*<span class="number">1024</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (memory_end &gt; <span class="number">6</span>*<span class="number">1024</span>*<span class="number">1024</span>)	<span class="comment">// 否则如果内存&gt;6Mb，则设置缓冲区末端=2Mb</span></span><br><span class="line">		buffer_memory_end = <span class="number">2</span>*<span class="number">1024</span>*<span class="number">1024</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		buffer_memory_end = <span class="number">1</span>*<span class="number">1024</span>*<span class="number">1024</span>;<span class="comment">// 否则则设置缓冲区末端=1Mb</span></span><br><span class="line">	main_memory_start = buffer_memory_end;<span class="comment">// 主内存起始位置=缓冲区末端；</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> RAMDISK	<span class="comment">// 如果定义了虚拟盘，则主内存将减少。</span></span></span><br><span class="line">	main_memory_start += rd_init(main_memory_start, RAMDISK*<span class="number">1024</span>);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">// 以下是内核进行所有方面的初始化工作。阅读时最好跟着调用的程序深入进去看，实在看</span></span><br><span class="line"><span class="comment">// 不下去了，就先放一放，看下一个初始化调用-- 这是经验之谈:)</span></span><br><span class="line">	mem_init(main_memory_start,memory_end);</span><br><span class="line">	trap_init();	<span class="comment">// 陷阱门（硬件中断向量）初始化。（kernel/traps.c）</span></span><br><span class="line">	blk_dev_init();	<span class="comment">// 块设备初始化。（kernel/blk_dev/ll_rw_blk.c）</span></span><br><span class="line">	chr_dev_init();	<span class="comment">// 字符设备初始化。（kernel/chr_dev/tty_io.c）空，为以后扩展做准备。</span></span><br><span class="line">	tty_init();		<span class="comment">// tty 初始化。（kernel/chr_dev/tty_io.c）</span></span><br><span class="line">	time_init();	<span class="comment">// 设置开机启动时间 -&gt; startup_time。</span></span><br><span class="line">	sched_init();	<span class="comment">// 调度程序初始化(加载了任务0 的tr, ldtr) （kernel/sched.c）</span></span><br><span class="line">	buffer_init(buffer_memory_end);<span class="comment">// 缓冲管理初始化，建内存链表等。（fs/buffer.c）</span></span><br><span class="line">	hd_init();		<span class="comment">// 硬盘初始化。（kernel/blk_dev/hd.c）</span></span><br><span class="line">	floppy_init();	<span class="comment">// 软驱初始化。（kernel/blk_dev/floppy.c）</span></span><br><span class="line">	sti();			<span class="comment">// 所有初始化工作都做完了，开启中断。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 下面过程通过在堆栈中设置的参数，利用中断返回指令切换到任务0。</span></span><br><span class="line">	move_to_user_mode();	<span class="comment">// 移到用户模式。（include/asm/system.h）</span></span><br><span class="line">	<span class="keyword">if</span> (!fork()) &#123;		<span class="comment">/* we count on this going ok */</span></span><br><span class="line">		init();</span><br><span class="line">	&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 注意!! 对于任何其它的任务，'pause()'将意味着我们必须等待收到一个信号才会返</span></span><br><span class="line"><span class="comment"> * 回就绪运行态，但任务0（task0）是唯一的意外情况（参见'schedule()'），因为任</span></span><br><span class="line"><span class="comment"> * 务0 在任何空闲时间里都会被激活（当没有其它任务在运行时），</span></span><br><span class="line"><span class="comment"> * 因此对于任务0'pause()'仅意味着我们返回来查看是否有其它任务可以运行，如果没</span></span><br><span class="line"><span class="comment"> * 有的话我们就回到这里，一直循环执行'pause()'。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	<span class="keyword">for</span>(;;) pause();</span><br><span class="line">&#125; <span class="comment">// end main</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="mem-init函数"><a href="#mem-init函数" class="headerlink" title="mem_init函数"></a>mem_init函数</h3><p>该函数是对主内存区进行管理初始化的。有以下一些点需要get到：</p>
-<ol>
-<li>Linux0.11将主内存按照4K的大小划分为多个页面来管理</li>
-<li>那么，内核如何知道哪些页面时可用的，哪些页面还为使用？</li>
-<li>如何处理内存页面的共享问题？</li>
-</ol>
-<p>下面的初始化代码可以大致解答这些问题：</p>
-<ol>
-<li>使用全局数组mem_map与主内存中的每个页面进行对应。</li>
-<li>使用数字表示页面被使用的次数，当某个下标对应的数字为0的时候，表示<br>其下标对应页面未使用，可以被分配。<br>那么，mem_init函数的主要工作就是讲mem_map初始化为0。</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">mem_init</span><span class="params">(<span class="keyword">long</span> start_mem, <span class="keyword">long</span> end_mem)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">	HIGH_MEMORY = end_mem;<span class="comment">// 设置内存最高端。</span></span><br><span class="line">	<span class="keyword">for</span> (i=<span class="number">0</span> ; i&lt;PAGING_PAGES ; i++)<span class="comment">// 首先置所有页面为已占用(USED=100)状态，</span></span><br><span class="line">		mem_map[i] = USED;<span class="comment">// 即将页面映射数组全置成USED。</span></span><br><span class="line">	i = MAP_NR(start_mem);<span class="comment">// 然后计算可使用起始内存的页面号。</span></span><br><span class="line">	end_mem -= start_mem;<span class="comment">// 再计算可分页处理的内存块大小。</span></span><br><span class="line">	end_mem &gt;&gt;= <span class="number">12</span>;<span class="comment">// 从而计算出可用于分页处理的页面数。</span></span><br><span class="line">	<span class="keyword">while</span> (end_mem--&gt;<span class="number">0</span>)<span class="comment">// 最后将这些可用页面对应的页面映射数组清零。</span></span><br><span class="line">		mem_map[i++]=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="trap-init"><a href="#trap-init" class="headerlink" title="trap_init"></a>trap_init</h3><p>要理解这个函数在做什么，首先要理解中断之于操作系统的意义：</p>
-<ol>
-<li><p>CPU在一刻不停的运转，假设我们正在执行用户程序，那么内核怎么来调度CPU来执行其他的程序呢？</p>
-</li>
-<li><p>在单核CPU中，用户程序正在执行，答案是无法运行内核程序要调度CPU去执行其他的程序。那么内核调度是如何实现的？</p>
-</li>
-<li><p>答案是，时钟中断。CPU会按照一定的频率去接受来自外部的时钟中断，CPU都会根据时钟中断的中断向量号到中断向量表中查找时钟中断<br>对应的中断处理程序，时钟中断的中断处理程序会调用内核的调度方法schedule方法，决定是否进行进程切换工作。</p>
-</li>
-<li><p>讲到这里，我们大概就理解了trap_init函数的作用，就是向中断向量表注册每个中断向量号对应的中断处理函数，以便CPU在接收到中断后能够正确处理中断。</p>
-</li>
-</ol>
-<p>看下面代码，可以看到该函数初始化一些我们可以猜到的一些中断陷入处理老程序0除，调试，溢出，页错误等等。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trap_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">	set_trap_gate(<span class="number">0</span>,&amp;divide_error);<span class="comment">// 设置除操作出错的中断向量值。以下雷同。</span></span><br><span class="line">	set_trap_gate(<span class="number">1</span>,&amp;debug);</span><br><span class="line">	set_trap_gate(<span class="number">2</span>,&amp;nmi);</span><br><span class="line">	set_system_gate(<span class="number">3</span>,&amp;int3);	<span class="comment">/* int3-5 can be called from all */</span></span><br><span class="line">	set_system_gate(<span class="number">4</span>,&amp;overflow);</span><br><span class="line">	set_system_gate(<span class="number">5</span>,&amp;bounds);</span><br><span class="line">	set_trap_gate(<span class="number">6</span>,&amp;invalid_op);</span><br><span class="line">	set_trap_gate(<span class="number">7</span>,&amp;device_not_available);</span><br><span class="line">	set_trap_gate(<span class="number">8</span>,&amp;double_fault);</span><br><span class="line">	set_trap_gate(<span class="number">9</span>,&amp;coprocessor_segment_overrun);</span><br><span class="line">	set_trap_gate(<span class="number">10</span>,&amp;invalid_TSS);</span><br><span class="line">	set_trap_gate(<span class="number">11</span>,&amp;segment_not_present);</span><br><span class="line">	set_trap_gate(<span class="number">12</span>,&amp;stack_segment);</span><br><span class="line">	set_trap_gate(<span class="number">13</span>,&amp;general_protection);</span><br><span class="line">	set_trap_gate(<span class="number">14</span>,&amp;page_fault);</span><br><span class="line">	set_trap_gate(<span class="number">15</span>,&amp;reserved);</span><br><span class="line">	set_trap_gate(<span class="number">16</span>,&amp;coprocessor_error);</span><br><span class="line"><span class="comment">// 下面将int17-48 的陷阱门先均设置为reserved，以后每个硬件初始化时会重新设置自己的陷阱门。</span></span><br><span class="line">	<span class="keyword">for</span> (i=<span class="number">17</span>;i&lt;<span class="number">48</span>;i++)</span><br><span class="line">		set_trap_gate(i,&amp;reserved);</span><br><span class="line">	set_trap_gate(<span class="number">45</span>,&amp;irq13);<span class="comment">// 设置协处理器的陷阱门。</span></span><br><span class="line">	outb_p(inb_p(<span class="number">0x21</span>)&amp;<span class="number">0xfb</span>,<span class="number">0x21</span>);<span class="comment">// 允许主8259A 芯片的IRQ2 中断请求。</span></span><br><span class="line">	outb(inb_p(<span class="number">0xA1</span>)&amp;<span class="number">0xdf</span>,<span class="number">0xA1</span>);<span class="comment">// 允许从8259A 芯片的IRQ13 中断请求。</span></span><br><span class="line">	set_trap_gate(<span class="number">39</span>,&amp;parallel_interrupt);<span class="comment">// 设置并行口的陷阱门。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="blk-dev-init"><a href="#blk-dev-init" class="headerlink" title="blk_dev_init"></a>blk_dev_init</h3><p>该函数式块设备初始化函数,什么是块设备？就是可以按照一大块数据进行读取数据的设备，典型的有硬盘，U盘等，与之对比，键盘属于字符设备。<br>要理解这段函数，我们先来看看request数组吧。</p>
-<ol>
-<li>request是request结构体类型的数组。</li>
-<li>request结构体是对一个块设备读取请求的一个抽象，表示了要读取哪个块设备的哪个起始扇区的，要读几个扇区，哪个任务在等待这个请求，<br>该任务数据的缓冲区和缓冲区头分别是哪个，并且指向了下一个request请求。至于为什么指向下一个请求，我暂时无法回答，猜测与io调度有关系。</li>
-</ol>
-<p>分析到这里，基本可以说明blk_dev_init函数在做什么了。初始化request数组而已,以备后用</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// 块设备初始化函数，由初始化程序main.c 调用（init/main.c,128）。</span></span><br><span class="line"><span class="comment">// 初始化请求数组，将所有请求项置为空闲项(dev = -1)。有32 项(NR_REQUEST = 32)。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">blk_dev_init</span> <span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; NR_REQUEST; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		request[i].dev = <span class="number">-1</span>;</span><br><span class="line">		request[i].next = <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">request</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="keyword">int</span> dev;			<span class="comment">/* -1 if no request */</span><span class="comment">// 使用的设备号。</span></span><br><span class="line">  <span class="keyword">int</span> cmd;			<span class="comment">/* READ or WRITE */</span><span class="comment">// 命令(READ 或WRITE)。</span></span><br><span class="line">  <span class="keyword">int</span> errors;			<span class="comment">//操作时产生的错误次数。</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> sector;		<span class="comment">// 起始扇区。(1 块=2 扇区)</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> nr_sectors;	<span class="comment">// 读/写扇区数。</span></span><br><span class="line">  <span class="keyword">char</span> *buffer;			<span class="comment">// 数据缓冲区。</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span> *<span class="title">waiting</span>;</span>	<span class="comment">// 任务等待操作执行完成的地方。</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> *<span class="title">bh</span>;</span>	<span class="comment">// 缓冲区头指针(include/linux/fs.h,68)。</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">request</span> *<span class="title">next</span>;</span>		<span class="comment">// 指向下一请求项。</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="chr-dev-init"><a href="#chr-dev-init" class="headerlink" title="chr_dev_init"></a>chr_dev_init</h3><p>在Linux0.11源代码中，该函数为空。</p>
-<h3 id="tty-init"><a href="#tty-init" class="headerlink" title="tty_init"></a>tty_init</h3><p>该函数大致看了一遍。实现的功能也比较简单。暂时不做进一步分析。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// tty 终端初始化函数。</span></span><br><span class="line"><span class="comment">// 初始化串口终端和控制台终端。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tty_init</span> <span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	rs_init ();			<span class="comment">// 初始化串行中断程序和串行接口1 和2。(serial.c, 37)</span></span><br><span class="line">	con_init ();			<span class="comment">// 初始化控制台终端。(console.c, 617)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="time-init"><a href="#time-init" class="headerlink" title="time_init"></a>time_init</h3><p>该函数设置开机时间</p>
-<h3 id="sched-init"><a href="#sched-init" class="headerlink" title="sched_init"></a>sched_init</h3><p>该函数顾名思义，是调度程序的初始化子程序，我们需要仔细分析一下。首先这需要了解中断描述符表的概念，我的<a href="https://xdushepherd91.github.io/2019/09/24/Linux-0-11-80x86%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E5%8F%8A%E5%85%B6%E7%BC%96%E7%A8%8B/" target="_blank" rel="noopener">这篇博客</a>有一个摘抄性质的记录，大家可以进一步参考相关书籍，形成对中断描述符表<br>的整体认识。</p>
-<p>首先来理解一下TSS(Task Status Segment)，任务状态段，该内存段是用来存储一个进程的所有上下文信息的，在进程被切换掉的时候，该段可以保存对应进程的所有的寄存器信息，程序<br>计数器信息等等，以便下一次该任务被切换执行的时候，可以从被中断的位置开始重新执行。</p>
-<ol>
-<li>这就不难理解set_tss_desc的意义了，在全局描述符表中，注册任务0的任务状态段信息，set_ldt_desc则在全局描述符表中注册了任务0的局部描述符表信息。</li>
-<li>接下来的初始化全局描述符表的表项，全部设置为0。</li>
-<li>将任务0的TSS描述符和局部描述符表分别加载到tr寄存器和ldtr寄存器中。</li>
-<li>接下来设置时钟中断程序向量，开始时钟中断。这个很重要，timer_interrupt函数定义在kernel/system_call.s中，是进程调度的入口函数。</li>
-<li>最后设置了系统调用的中断程序向量。这里需要理解，我们使用的所有的系统调用，最终都是通过向CPU发出一个中断向量号为0x80的软中断来完成的，至于每个系统调用的参数等，则需要<br>在进行系统调用的时候存储到寄存器中即可。</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调度程序的初始化子程序。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sched_init</span> <span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">desc_struct</span> *<span class="title">p</span>;</span>	<span class="comment">// 描述符表结构指针。</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">sizeof</span> (struct sigaction) != <span class="number">16</span>)	<span class="comment">// sigaction 是存放有关信号状态的结构。</span></span><br><span class="line">		panic (<span class="string">"Struct sigaction MUST be 16 bytes"</span>);</span><br><span class="line"><span class="comment">// 设置初始任务（任务0）的任务状态段描述符和局部数据表描述符(include/asm/system.h,65)。</span></span><br><span class="line">	set_tss_desc (gdt + FIRST_TSS_ENTRY, &amp;(init_task.task.tss));</span><br><span class="line">	set_ldt_desc (gdt + FIRST_LDT_ENTRY, &amp;(init_task.task.ldt));</span><br><span class="line"><span class="comment">// 清任务数组和描述符表项（注意i=1 开始，所以初始任务的描述符还在）。</span></span><br><span class="line">	p = gdt + <span class="number">2</span> + FIRST_TSS_ENTRY;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; NR_TASKS; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		task[i] = <span class="literal">NULL</span>;</span><br><span class="line">		p-&gt;a = p-&gt;b = <span class="number">0</span>;</span><br><span class="line">		p++;</span><br><span class="line">		p-&gt;a = p-&gt;b = <span class="number">0</span>;</span><br><span class="line">		p++;</span><br><span class="line">	&#125;</span><br><span class="line"><span class="comment">/* 清除标志寄存器中的位NT，这样以后就不会有麻烦 */</span></span><br><span class="line"><span class="comment">// NT 标志用于控制程序的递归调用(Nested Task)。当NT 置位时，那么当前中断任务执行</span></span><br><span class="line"><span class="comment">// iret 指令时就会引起任务切换。NT 指出TSS 中的back_link 字段是否有效。</span></span><br><span class="line"><span class="comment">//  __asm__ ("pushfl ; andl $0xffffbfff,(%esp) ; popfl");	// 复位NT 标志。</span></span><br><span class="line">	_asm pushfd; _asm <span class="keyword">and</span> dword ptr ss:[esp],<span class="number">0xffffbfff</span>; _asm popfd;</span><br><span class="line">	ltr (<span class="number">0</span>);			<span class="comment">// 将任务0 的TSS 加载到任务寄存器tr。</span></span><br><span class="line">	lldt (<span class="number">0</span>);			<span class="comment">// 将局部描述符表加载到局部描述符表寄存器。</span></span><br><span class="line"><span class="comment">// 注意！！是将GDT 中相应LDT 描述符的选择符加载到ldtr。只明确加载这一次，以后新任务</span></span><br><span class="line"><span class="comment">// LDT 的加载，是CPU 根据TSS 中的LDT 项自动加载。</span></span><br><span class="line"><span class="comment">// 下面代码用于初始化8253 定时器。</span></span><br><span class="line">	outb_p (<span class="number">0x36</span>, <span class="number">0x43</span>);		<span class="comment">/* binary, mode 3, LSB/MSB, ch 0 */</span></span><br><span class="line">	outb_p (LATCH &amp; <span class="number">0xff</span>, <span class="number">0x40</span>);	<span class="comment">/* LSB */</span><span class="comment">// 定时值低字节。</span></span><br><span class="line">	outb (LATCH &gt;&gt; <span class="number">8</span>, <span class="number">0x40</span>);	<span class="comment">/* MSB */</span><span class="comment">// 定时值高字节。</span></span><br><span class="line">  <span class="comment">// 设置时钟中断处理程序句柄（设置时钟中断门）。</span></span><br><span class="line">	set_intr_gate (<span class="number">0x20</span>, &amp;timer_interrupt);</span><br><span class="line">  <span class="comment">// 修改中断控制器屏蔽码，允许时钟中断。</span></span><br><span class="line">	outb (inb_p (<span class="number">0x21</span>) &amp; ~<span class="number">0x01</span>, <span class="number">0x21</span>);</span><br><span class="line">  <span class="comment">// 设置系统调用中断门。</span></span><br><span class="line">	set_system_gate (<span class="number">0x80</span>, &amp;system_call);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="buffer-init"><a href="#buffer-init" class="headerlink" title="buffer_init"></a>buffer_init</h3><p>buffer_init函数对缓冲区进行初始化，至于缓冲区，前文有专门提到，这里再讲一下，高速缓冲区是用来进行硬盘数据缓冲的，这个区由<br>缓冲区头和缓冲区块共同组成。缓冲区头是缓冲区块的元数据，用来标记对应缓冲区块是哪个硬盘的哪个扇区的数据缓冲，缓冲区块则存储了<br>磁盘中多个扇区的完整数据，具体多少个扇区需要根据操作系统的设置来决定，在Linux0.11来说，一个缓冲区块存储了1024字节的数据，而<br>一个扇区一边是512字节的数据，因此一个缓冲区块存储了两个扇区的数据。</p>
-<p>在该函数中：</p>
-<ol>
-<li>程序从缓冲区的开头和末端分别开始，初始化一个缓冲区头同时再设置一个缓冲区，并让缓冲区头将缓冲区管理起来，如此循环，知道缓冲区头<br>和缓冲区相遇结束。</li>
-<li>第一个缓冲区头指针为内核代码最末端，保存在start_buffer指针中。</li>
-<li>在缓冲区初始化完成后，内核将缓冲区头指针赋予了一个称之为free_list的全局变量之后。</li>
-<li>将一个哈希表初始化。</li>
-</ol>
-<p>free_list和哈希表存在是为了更加有效的使用缓冲区内存，这个后面的文章会深入分析。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// 缓冲区初始化函数。</span></span><br><span class="line"><span class="comment">// 参数buffer_end 是指定的缓冲区内存的末端。对于系统有16MB 内存，则缓冲区末端设置为4MB。</span></span><br><span class="line"><span class="comment">// 对于系统有8MB 内存，缓冲区末端设置为2MB。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">buffer_init</span><span class="params">(<span class="keyword">long</span> buffer_end)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> * <span class="title">h</span> = <span class="title">start_buffer</span>;</span></span><br><span class="line">	<span class="keyword">void</span> * b;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果缓冲区高端等于1Mb，则由于从640KB-1MB 被显示内存和BIOS 占用，因此实际可用缓冲区内存</span></span><br><span class="line"><span class="comment">// 高端应该是640KB。否则内存高端一定大于1MB。</span></span><br><span class="line">	<span class="keyword">if</span> (buffer_end == <span class="number">1</span>&lt;&lt;<span class="number">20</span>)</span><br><span class="line">		b = (<span class="keyword">void</span> *) (<span class="number">640</span>*<span class="number">1024</span>);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		b = (<span class="keyword">void</span> *) buffer_end;</span><br><span class="line"><span class="comment">// 这段代码用于初始化缓冲区，建立空闲缓冲区环链表，并获取系统中缓冲块的数目。</span></span><br><span class="line"><span class="comment">// 操作的过程是从缓冲区高端开始划分1K 大小的缓冲块，与此同时在缓冲区低端建立描述该缓冲块</span></span><br><span class="line"><span class="comment">// 的结构buffer_head，并将这些buffer_head 组成双向链表。</span></span><br><span class="line"><span class="comment">// h 是指向缓冲头结构的指针，而h+1 是指向内存地址连续的下一个缓冲头地址，也可以说是指向h</span></span><br><span class="line"><span class="comment">// 缓冲头的末端外。为了保证有足够长度的内存来存储一个缓冲头结构，需要b 所指向的内存块</span></span><br><span class="line"><span class="comment">// 地址&gt;= h 缓冲头的末端，也即要&gt;=h+1。</span></span><br><span class="line">	<span class="keyword">while</span> ( (b = (<span class="keyword">char</span>*)b - BLOCK_SIZE) &gt;= ((<span class="keyword">void</span> *) (h+<span class="number">1</span>)) ) &#123;</span><br><span class="line">		h-&gt;b_dev = <span class="number">0</span>;			<span class="comment">// 使用该缓冲区的设备号。</span></span><br><span class="line">		h-&gt;b_dirt = <span class="number">0</span>;			<span class="comment">// 脏标志，也即缓冲区修改标志。</span></span><br><span class="line">		h-&gt;b_count = <span class="number">0</span>;			<span class="comment">// 该缓冲区引用计数。</span></span><br><span class="line">		h-&gt;b_lock = <span class="number">0</span>;			<span class="comment">// 缓冲区锁定标志。</span></span><br><span class="line">		h-&gt;b_uptodate = <span class="number">0</span>;		<span class="comment">// 缓冲区更新标志（或称数据有效标志）。</span></span><br><span class="line">		h-&gt;b_wait = <span class="literal">NULL</span>;		<span class="comment">// 指向等待该缓冲区解锁的进程。</span></span><br><span class="line">		h-&gt;b_next = <span class="literal">NULL</span>;		<span class="comment">// 指向具有相同hash 值的下一个缓冲头。</span></span><br><span class="line">		h-&gt;b_prev = <span class="literal">NULL</span>;		<span class="comment">// 指向具有相同hash 值的前一个缓冲头。</span></span><br><span class="line">		h-&gt;b_data = (<span class="keyword">char</span> *) b;	<span class="comment">// 指向对应缓冲区数据块（1024 字节）。</span></span><br><span class="line">		h-&gt;b_prev_free = h<span class="number">-1</span>;	<span class="comment">// 指向链表中前一项。</span></span><br><span class="line">		h-&gt;b_next_free = h+<span class="number">1</span>;	<span class="comment">// 指向链表中下一项。</span></span><br><span class="line">		h++;					<span class="comment">// h 指向下一新缓冲头位置。</span></span><br><span class="line">		NR_BUFFERS++;			<span class="comment">// 缓冲区块数累加。</span></span><br><span class="line">		<span class="keyword">if</span> (b == (<span class="keyword">void</span> *) <span class="number">0x100000</span>)		<span class="comment">// 如果地址b 递减到等于1MB，则跳过384KB，</span></span><br><span class="line">			b = (<span class="keyword">void</span> *) <span class="number">0xA0000</span>;		<span class="comment">// 让b 指向地址0xA0000(640KB)处。</span></span><br><span class="line">	&#125;</span><br><span class="line">	h--;			<span class="comment">// 让h 指向最后一个有效缓冲头。</span></span><br><span class="line">	free_list = start_buffer;		<span class="comment">// 让空闲链表头指向头一个缓冲区头。</span></span><br><span class="line">	free_list-&gt;b_prev_free = h;		<span class="comment">// 链表头的b_prev_free 指向前一项（即最后一项）。</span></span><br><span class="line">	h-&gt;b_next_free = free_list;		<span class="comment">// h 的下一项指针指向第一项，形成一个环链。</span></span><br><span class="line">	<span class="comment">// 初始化hash 表（哈希表、散列表），置表中所有的指针为NULL。</span></span><br><span class="line">	<span class="keyword">for</span> (i=<span class="number">0</span>;i&lt;NR_HASH;i++)</span><br><span class="line">		hash_table[i]=<span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="hd-init"><a href="#hd-init" class="headerlink" title="hd_init"></a>hd_init</h3><p>该函数进行了如下操作：</p>
-<ol>
-<li>对blk_dev数组中硬盘对应的request_fn进行了赋值，指向了do_hd_request对应的代码。用于处理硬盘数据请求。</li>
-<li>设置了硬盘中断向量，并且设置了CPU，允许硬盘控制器发送硬盘中断请求。</li>
-</ol>
-<p>后续的文章可以进行深入分析。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 硬盘系统初始化。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">hd_init</span> <span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;	<span class="comment">// do_hd_request()。</span></span><br><span class="line">	set_intr_gate (<span class="number">0x2E</span>, &amp;hd_interrupt);	<span class="comment">// 设置硬盘中断门向量 int 0x2E(46)。</span></span><br><span class="line"><span class="comment">// hd_interrupt 在(kernel/system_call.s,221)。</span></span><br><span class="line">	outb_p (inb_p (<span class="number">0x21</span>) &amp; <span class="number">0xfb</span>, <span class="number">0x21</span>);	<span class="comment">// 复位接联的主8259A int2 的屏蔽位，允许从片</span></span><br><span class="line"><span class="comment">// 发出中断请求信号。</span></span><br><span class="line">	outb (inb_p (<span class="number">0xA1</span>) &amp; <span class="number">0xbf</span>, <span class="number">0xA1</span>);	<span class="comment">// 复位硬盘的中断请求屏蔽位（在从片上），允许</span></span><br><span class="line"><span class="comment">// 硬盘控制器发送中断请求信号。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="floppy-init"><a href="#floppy-init" class="headerlink" title="floppy_init"></a>floppy_init</h3><p>软盘和硬盘类似，并且我没有接触过，其代码并没有深入分析。</p>
-<h3 id="sti"><a href="#sti" class="headerlink" title="sti"></a>sti</h3><p>开启中断</p>
-<h3 id="move-to-user-mode"><a href="#move-to-user-mode" class="headerlink" title="move_to_user_mode"></a>move_to_user_mode</h3><p>切换到用户模式运行。<br>该函数利用iret 指令实现从内核模式切换到用户模式（初始任务0）。</p>
-<p>该段代码，似懂非懂</p>
-<figure class="highlight as"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#define move_to_user_mode() \</span><br><span class="line">_asm &#123; \</span><br><span class="line">	_asm mov eax,esp <span class="comment">/* 保存堆栈指针esp 到eax 寄存器中。*/</span>\</span><br><span class="line">	_asm push <span class="number">00000017</span>h <span class="comment">/* 首先将堆栈段选择符(SS)入栈。*/</span>\</span><br><span class="line">	_asm push eax <span class="comment">/* 然后将保存的堆栈指针值(esp)入栈。*/</span>\</span><br><span class="line">	_asm pushfd <span class="comment">/* 将标志寄存器(eflags)内容入栈。*/</span>\</span><br><span class="line">	_asm push <span class="number">0000000</span>fh <span class="comment">/* 将内核代码段选择符(cs)入栈。*/</span>\</span><br><span class="line">	_asm push offset l1 <span class="comment">/* 将下面标号l1 的偏移地址(eip)入栈。*/</span>\</span><br><span class="line">	_asm iretd <span class="comment">/* 执行中断返回指令，则会跳转到下面标号1 处。*/</span>\</span><br><span class="line">_asm l1: mov eax,<span class="number">17</span>h <span class="comment">/* 此时开始执行任务0，*/</span>\</span><br><span class="line">	_asm mov ds,ax <span class="comment">/* 初始化段寄存器指向本局部表的数据段。*/</span>\</span><br><span class="line">	_asm mov es,ax \</span><br><span class="line">	_asm mov fs,ax \</span><br><span class="line">	_asm mov gs,ax \</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="fork-和-init"><a href="#fork-和-init" class="headerlink" title="fork 和 init"></a>fork 和 init</h3><p>在后续的执行中，任务0执行fork系统调用，fork出来的任务1执行init方法，而任务0将会循环执行pause()。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文是我在阅读Linux0.11源码中main函数时的一些总结，有自己的一些理解。还有以下几个方面都有一些遗留问题</p>
-<ol>
-<li>buffer_init。其中free_list和哈希表的用途需要进一步分析。</li>
-<li>hd_init。其中do_hd_request函数需要进一步分析</li>
-<li>move_to_user_mode。该函数的具体意义的进一步分析。</li>
-</ol>
-
-          
+pc机器的BIOS程序启动，开始加载硬盘中的bootsect.s对应的机器码程序到内存中，将CPU的程序计数器指向bootsect.s对应机器码在内存中的起始位置，开
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/12/Linux-0-11内核main函数执行过程分析——1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

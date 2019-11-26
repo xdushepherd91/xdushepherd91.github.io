@@ -363,59 +363,21 @@
       
         
           
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文分为几个部分，其中大部分都是官网的内容，这里只提供框架，方便日后对照。</p>
-<ol>
-<li>hexo博客的本地搭建。比较简单，基本上按照官网的流程走即可。</li>
-<li>hexo博客部署问题解决。</li>
-</ol>
-<h2 id="第一部分-博客搭建"><a href="#第一部分-博客搭建" class="headerlink" title="第一部分 博客搭建"></a>第一部分 博客搭建</h2><h3 id="本地环境搭建"><a href="#本地环境搭建" class="headerlink" title="本地环境搭建"></a>本地环境搭建</h3><p>在使用hexo搭建博客的过程中，首先要面临安装的问题。在一个干净的环境中，我们需要以此安装：</p>
-<ol>
-<li>nodejs</li>
-<li>git</li>
-<li>hexo-cli<br>具体参考官方文档<a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">hexo环境搭建</a></li>
-</ol>
-<h3 id="第一篇博文"><a href="#第一篇博文" class="headerlink" title="第一篇博文"></a>第一篇博文</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 1. 生成博客，查看博客的基本结构，具体每个目录的介绍看官网。(https://hexo.io/zh-cn/docs/setup)</span></span><br><span class="line"></span><br><span class="line">hexo init blog-name</span><br><span class="line"><span class="built_in">cd</span> blog-name</span><br><span class="line">npm install</span><br><span class="line">ls</span><br><span class="line"></span><br><span class="line"><span class="comment">## 2. 生成第一篇博客</span></span><br><span class="line"></span><br><span class="line">hexo new post <span class="string">"我的第一篇博客"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 3. 生成静态文件</span></span><br><span class="line"></span><br><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"><span class="comment">## 4. 启动本地博客服务。默认情况下，访问网址为： http://localhost:4000</span></span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+          概述本文分为几个部分，其中大部分都是官网的内容，这里只提供框架，方便日后对照。
 
-<p><a href="https://hexo.io/zh-cn/docs/commands" target="_blank" rel="noopener">指令</a>页面包含了更多详细的指令介绍。但是，我们最终的目的是在日常<br>写作中仅仅使用hexo new post title来生成博客，使用git相关命令推送博客内容即可。所以，对于其他的命令，知道就好。</p>
-<h3 id="主题和配置"><a href="#主题和配置" class="headerlink" title="主题和配置"></a>主题和配置</h3><p>在完成了基本的博客搭建工作之后，我们可以选择一款合适的主题，美化一下博客页面。我选择的是<a href="http://theme-next.iissnan.com/" target="_blank" rel="noopener">next</a>，非常经典的一款hexo<br>博客主题，基本上按照主题的指导，就可以配置出一款自己喜欢的博客皮肤了，当然，你也可以选择<a href="https://hexo.io/themes/" target="_blank" rel="noopener">其他主题</a>。</p>
-<h2 id="第二部分-博客部署"><a href="#第二部分-博客部署" class="headerlink" title="第二部分 博客部署"></a>第二部分 博客部署</h2><p>这个部分需要解决以下两个问题：</p>
-<ol>
-<li><p>如何让更多人看到我的博客内容，而不是仅仅自己本地查看？</p>
-</li>
-<li><p>我希望在公司，家里，甚至是任何一台新电脑上随时开始写博客并且部署，如何实现？</p>
-</li>
-</ol>
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p><a href="https://hexo.io/zh-cn/docs/github-pages" target="_blank" rel="noopener">github pages</a>部署，参考该页面中的部署方式，我们会得到这样一个结果：</p>
-<ol>
-<li><p>第一部分中的博客目录完全备份到github仓库中。这样，我们就不需要担心博客内容丢失了。</p>
-</li>
-<li><p>任何时候想要新写一个博客，只需要hexo new post post-name。写完之后将博客加入仓库，然后推送到github仓库。然后Travis自动将新的博客发布到博客分支之上。</p>
-</li>
-<li><p>在任何一个安装了git，nodejs和hexo-cli的电脑上，我们只需要拉取仓库，然后就可以新建博客，开始写作了。</p>
-</li>
-</ol>
-<p>在第二部分一开始提出的问题，基本解决。</p>
-<p>在实际操作过程中，有一些问题需要注意。</p>
-<ol>
-<li><p>hexo官网教程指导创建的仓库，github pages只能解析master分支，而Travis自动化构建的时候，将博客内容发布到了gh-pages分支。这会导致博客内容无法浏览。解决方案如下：</p>
-<ol>
-<li>在博客主目录下,git checkout -b blog-source；git push origin blog-source:blog-source;</li>
-<li>git checkout master;git rm .;rm -rf *;git add .;git commit -m “清空master分支”;git pull origin master;git push origin master;</li>
-<li>修改Travis配置文件.travis.yml<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">10</span> <span class="comment"># use nodejs v10 LTS</span></span><br><span class="line"><span class="comment"># cache: npm</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line"><span class="attr">  only:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">blog-source</span> <span class="comment"># 修改构建分支</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="comment"># - git clone https://github.com/iissnan/hexo-theme-next themes/next</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">generate</span> <span class="comment"># generate static files</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  provider:</span> <span class="string">pages</span></span><br><span class="line"><span class="attr">  skip-cleanup:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  github-token:</span> <span class="string">$GH_TOKEN</span></span><br><span class="line"><span class="attr">  target_branch:</span> <span class="string">master</span>  <span class="comment">##修改目标分支为master</span></span><br><span class="line"><span class="attr">  keep-history:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  on:</span></span><br><span class="line"><span class="attr">    branch:</span> <span class="string">blog-source</span>  <span class="comment">## 修改构建分支</span></span><br><span class="line"><span class="attr">  local-dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-</li>
-<li><p>next主题也是一个git仓库，无法添加到博客仓库。解决方法如下：</p>
-<ol>
-<li>进入themes/next目录，执行 rm -rf .git。</li>
-<li>返回主目录，git add themes/next。</li>
-</ol>
-</li>
-</ol>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>经过如上步骤，我们得到了一个基本功能完善，由github仓库备份，随时可用的hexo博客系统。</p>
-<p>记忆力太差，博客来补。</p>
+hexo博客的本地搭建。比较简单，基本上按照官网的流程走即可。
+hexo博客部署问题解决。
 
-          
+第一部分 博客搭建本地环境搭建在使用hexo搭建博客的过程中，首先要面临安装的问题。在一个干净的环境中，我们需要以此安装：
+
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/10/hexo博客搭建过程中的问题解决/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -555,63 +517,19 @@
       
         
           
-            <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在Linux内核中，文件系统部分大致可以分为四个部分来看：</p>
-<ol>
-<li>高速缓冲区。该部分内容集中在bufffer.c中实现。</li>
-<li>文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。</li>
-<li>有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访问。</li>
-<li>文件系统调用接口的实现，主要涉及文件打开，关闭，创建以及有关文件目录操作等的系统调用。</li>
-</ol>
-<h3 id="高速缓冲区"><a href="#高速缓冲区" class="headerlink" title="高速缓冲区"></a>高速缓冲区</h3><p>高速缓冲区是文件系统访问块设备中数据的必经要道。</p>
-<p>高速缓冲区由缓冲区头和缓冲区块构成。</p>
-<p>其物理位置位于内核代码和主内存之间。高速缓冲区块中存放着最近被使用过的各个块设备中的数据块。</p>
-<p>当需要从块设备读取数据时，缓冲区管理程序首先在缓冲区中查找，即检索缓冲区头。如果已经存在，直接读取即可。</p>
-<p>写入的时候，也是先写入到高速缓冲区中，至于什么时候真正的写入数据，则是要通过设备数据同步是现代的。</p>
-<p>Linux内核实现高速缓冲区的程序是buffer.c。文件系统中其他程序通过指定需要访问的设备号和数据逻辑块号来调用它的块读写函数。</p>
-<ol>
-<li>块读取函数bread()</li>
-<li>块提前预读函数breada()</li>
-<li>页读取函数bread_page()</li>
-</ol>
-<h3 id="文件系统底层函数"><a href="#文件系统底层函数" class="headerlink" title="文件系统底层函数"></a>文件系统底层函数</h3><p>文件系统底层处理函数包含以下5个文件：</p>
-<ol>
-<li>bitmap.c。包括了inode位图和逻辑块位图进行释放和占用处理函数。分别有<ol>
-<li>free_inode和new_inode。</li>
-<li>free_block和new_block。</li>
-</ol>
-</li>
-<li>truncate.c。该程序包括了将数据文件长度截断为0的函数truncate()。将inode指定设备的文件长度设置为0，并释放文件数据占用的设备逻辑块。</li>
-<li>inode.c。程序包括分配inode函数iget()和放回对内存inode存取函数iput()以及根据inode节点信息取文件数据块在设备上对应的逻辑块号函数bmap()。</li>
-<li>namei.c。程序主要包括函数namei()。该函数使用iget(),iput()和bmap()将给定文件路径名映射到其inode上。</li>
-<li>super.c。专门用于处理文件系统超级块，包括了函数get_super(),put_super()和free_super()等。</li>
-</ol>
-<h3 id="文件中数据的访问"><a href="#文件中数据的访问" class="headerlink" title="文件中数据的访问"></a>文件中数据的访问</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>block_dev.c</li>
-<li>file_dev.c</li>
-<li>char_dev.c</li>
-<li>pipe.c</li>
-<li>read_write.c</li>
-</ol>
-<h3 id="文件和目录管理的系统调用"><a href="#文件和目录管理的系统调用" class="headerlink" title="文件和目录管理的系统调用"></a>文件和目录管理的系统调用</h3><p>主要涉及5个文件：</p>
-<ol>
-<li>open.c。该文件用于实现与文件操作相关的系统调用。主要有文件的创建，打开和关闭，文件属性修改，文件访问权限修改等等</li>
-<li>exec.c。实现对二进制可执行文件和shell脚本文件的加载和执行。主要函数do_execve()。</li>
-<li>fcntl.c。实现了系统调用fcntl()和dup()等。</li>
-<li>ioctl.c。实现了输入输出控制系统调用ioctl()。主要调用tty_ioctl()函数，对中断的IO进行控制。</li>
-<li>stat.c。 实现了文件状态信息系统调用stat()和fstat()。stat是利用文件名提取信息，而fstat是利用文件描述符提取信息</li>
-</ol>
-<h3 id="待整理"><a href="#待整理" class="headerlink" title="待整理"></a>待整理</h3><p>Linux0.11中，最多可以加载8个文件系统，因为其超级块数组的大小为8.</p>
-<p>超级块表在super.c的mount_root()函数中被初始化，</p>
-<p>read_super()会为新加载的文件系统在超级块表中设置一个超级块项</p>
-<p>put_super()函数会释放超级块表中的超级块项目</p>
-<p>逻辑块位图用于描述每个数据块的实用情况，除了第一个比特位外，逻辑块位图的每个比特位<br>依次代表数据区中的一个逻辑块。因此，逻辑块位图的比特位1代表了盘上数据区中第一个数据块，<br>而不是第一个磁盘块。当一个数据块被使用的时候，逻辑块位图中相应的比特位被置位，由于所有<br>磁盘数据块都被占用的时候，查找空闲数据块的函数返回0值，因此逻辑块位图的第一个比特位闲置<br>不用，并且在创建文件系统的时候会预先将其设置为1.</p>
-<p>从逻辑块的结构可以看出，逻辑块位图最多使用8个缓冲区块，每个缓冲区块的大小事1024字节，每个比特<br>表示了一个盘块，因此一个缓冲区块可以代表8192个盘块，8个缓冲区块总共可以表示65536个盘块，<br>一个盘块的大小事1K,因此Linux0.11中所能支持的最大设备容量是64MB。</p>
-<p>inode位图用于说明inode是否被使用，同样是每个比特位代表一个inode。对于1k大小的盘块来讲，一个盘块<br>就可以表示8192个inode的使用情况，具体情况与逻辑块类似。</p>
-<p>盘上的inode存放着文件系统中文件或者目录名的索引节点，每个文件或者目录名都有一个inode。每个inode结构<br>存放着对应文件的相关信息，文件的uid，gid，文件长度，访问修改时间，文件数据块在盘上的位置等，整个结构占用<br>32个字节。</p>
-<p>文件系统目录项结构。定义在include/linux/fs.h中，在文件系统的一个目录中，其中所有文件名信息对应的目录项存储在<br>该目录文件名文件的数据块中。例如，目录名root/下所有文件名的目录项就保存在root/目录名文件的数据块中。而文件系统<br>根目录下的所有文件名信息则保存在指定inode的数据块中。其数据结构称为dir_entry。<br>每个目录项保存一个长度为14字节的文件名和该文件名对应的2字节的inode号码。因此一个逻辑磁盘块可以保存1024/16=64个目录项。<br>有关文件的其他信息则被保存在该inode号指定的inode结构之中。</p>
+          概述在Linux内核中，文件系统部分大致可以分为四个部分来看：
 
-          
+高速缓冲区。该部分内容集中在bufffer.c中实现。
+文件系统的底层通用函数。文件索引节点的管理，磁盘数据块的分配和释放，文件名和inode之间的转换算法等。
+有关对文件中数据进行读写操作，包括对字符设备，管道，块读写文件中的数据访
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/26/Linux-0-11文件系统模块笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -751,27 +669,18 @@
       
         
           
-            <h3 id="db、dw、dd、dq解释"><a href="#db、dw、dd、dq解释" class="headerlink" title="db、dw、dd、dq解释"></a>db、dw、dd、dq解释</h3><p>DB定义字节类型变量，一个字节数据占1个字节单元，读完一个，偏移量加1</p>
-<p>DW定义字类型变量，一个字数据占2个字节单元，读完一个，偏移量加2</p>
-<p>DD定义双字类型变量，一个双字数据占4个字节单元，读完一个，偏移量加4</p>
-<p>DQ定义四字类型变量，一个四字数据占8个字节单元，读完一个，偏移量加8</p>
-<h3 id="lgdt-fword-ptr-gdt-descr"><a href="#lgdt-fword-ptr-gdt-descr" class="headerlink" title="lgdt fword ptr gdt_descr"></a>lgdt fword ptr gdt_descr</h3><h3 id="org"><a href="#org" class="headerlink" title="org"></a>org</h3><p>org是汇编器的伪指令，是告诉编译器下一条汇编语句的偏移地址</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">;<span class="comment">/*</span></span><br><span class="line"><span class="comment">; * Linus 将内核的内存页表直接放在页目录之后，使用了4 个表来寻址16 Mb 的物理内存。</span></span><br><span class="line"><span class="comment">; * 如果你有多于16 Mb 的内存，就需要在这里进行扩充修改。</span></span><br><span class="line"><span class="comment">; */</span></span><br><span class="line">;<span class="comment">// 每个页表长为4 Kb 字节，而每个页表项需要4 个字节，因此一个页表共可以存放1000 个，</span></span><br><span class="line">;<span class="comment">// 表项如果一个表项寻址4 Kb 的地址空间，则一个页表就可以寻址4 Mb 的物理内存。页表项</span></span><br><span class="line">;<span class="comment">// 的格式为：项的前0-11 位存放一些标志，如是否在内存中(P 位0)、读写许可(R/W 位1)、</span></span><br><span class="line">;<span class="comment">// 普通用户还是超级用户使用(U/S 位2)、是否修改过(是否脏了)(D 位6)等；表项的位12-31 </span></span><br><span class="line">;<span class="comment">// 是页框地址，用于指出一页内存的物理起始地址。</span></span><br><span class="line">org <span class="number">1000</span>h		;<span class="comment">// 从偏移0x1000 处开始是第1 个页表（偏移0 开始处将存放页表目录）。</span></span><br><span class="line">pg0:</span><br><span class="line"></span><br><span class="line">org <span class="number">2000</span>h</span><br><span class="line">pg1:</span><br><span class="line"></span><br><span class="line">org <span class="number">3000</span>h</span><br><span class="line">pg2:</span><br><span class="line"></span><br><span class="line">org <span class="number">4000</span>h</span><br><span class="line">pg3:</span><br><span class="line"></span><br><span class="line">org <span class="number">5000</span>h		;<span class="comment">// 定义下面的内存数据块从偏移0x5000 处开始。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="lss"><a href="#lss" class="headerlink" title="lss"></a>lss</h3><p>总体描述：<br>用32位或48位或64位的数据加载16位SS段选择符和16或32位或64位的通用寄存器值，其中通用寄存器在目的操作数中。<br>LSS (16or32or64)通用寄存器, (32or48or64)内存变量的地址</p>
-<h3 id="lea"><a href="#lea" class="headerlink" title="lea"></a>lea</h3><p>LEA指令的功能是将源操作数、即存储单元的有效地址（偏移地址）传送到目的操作数。</p>
-<p>LEA有两个操作数：</p>
-<p>1、左边是目的操作数，表示操作结果保存在此，该指令目的操作数只能是8个通用寄存器之一。</p>
-<p>2、右边的是源操作数，该指令的源操作数只能是一个存储单元，表达存储单元有多种寻址方式。</p>
-<h3 id="DQ-256-dup-0-idt-is-uninitialized-256-项，每项8-字节，填0。"><a href="#DQ-256-dup-0-idt-is-uninitialized-256-项，每项8-字节，填0。" class="headerlink" title="DQ 256 dup(0)    ;// idt is uninitialized // 256 项，每项8 字节，填0。"></a>DQ 256 dup(0)    ;// idt is uninitialized // 256 项，每项8 字节，填0。</h3><p>定义了256个4字0，即256*8个字节0</p>
-<h3 id="LMSW、SMSW"><a href="#LMSW、SMSW" class="headerlink" title="LMSW、SMSW"></a>LMSW、SMSW</h3><p>SMSW: Store Machine Status Word<br>取处理器状态字，即CR0寄存器的第0到15位。没有记错的话操作数可以是16位通用寄存器或者内存地址。</p>
-<p>LMSW: Load Machine Status Word<br>置处理器状态字。但是只有操作数的低4位被存入CR0，只有PE,MP,EM和TS被改写，CR0其他位不受影响。</p>
-<h3 id="IRET-IRETD-中断返回"><a href="#IRET-IRETD-中断返回" class="headerlink" title="IRET/IRETD - 中断返回"></a>IRET/IRETD - 中断返回</h3><p>iretd</p>
-<p>当一个中断服务程序执行完毕时，CPU将恢复被中断的现场，返回到引起中断的程序中。为了实现此项功能，指令系统提供了一条专用的中断返回指令。</p>
-<p>该指令执行的过程基本上是INT指令的逆过程，具体如下：<br>◆、从栈顶弹出内容送入IP；<br>◆、再从新栈顶弹出内容送入CS；<br>◆、再从新栈顶弹出内容送入标志寄存器；<br>对80386及其以后的CPU，指令IRETD从栈顶弹出32位内容送入EIP。<br>中断和子程序调用之间有其相似和不同之处。它们的工作过程非常相似，即：暂停当前程序的执行，转而执行另一程序段，当该程序段执行完时，CPU都自动恢复原程序的执行。</p>
-<p>它们的主要差异有：<br>◆、子程序调用一定是程序员在编写源程序时事先安排好的，是可知的，而中断是由中断源根据自身的需要产生的，是不可预见的(用指令INT引起的中断除外)；<br>◆、子程序调用是用CALL指令来实现的，但没有调用中断的指令，只有发出中断请求的事件(指令INT是发出内部中断信号，而不要理解为调用中断服务程序)；<br>◆、子程序的返回指令是RET，而中断服务程序的返回指令是IRET/IRETD。<br>◆、在通常情况下，子程序是由应用系统的开发者编写的，而中断服务程序是由系统软件设计者编写的。</p>
-<h3 id="int"><a href="#int" class="headerlink" title="int"></a>int</h3>
-          
+          db、dw、dd、dq解释DB定义字节类型变量，一个字节数据占1个字节单元，读完一个，偏移量加1
+DW定义字类型变量，一个字数据占2个字节单元，读完一个，偏移量加2
+DD定义双字类型变量，一个双字数据占4个字节单元，读完一个，偏移量加4
+DQ定义四字类型变量，一个四字数据占8个字节单元，读完一个，偏
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/25/汇编语言部分语法记录/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -911,54 +820,15 @@
       
         
           
-            <h2 id="80x86-系统寄存器和系统指令"><a href="#80x86-系统寄存器和系统指令" class="headerlink" title="80x86 系统寄存器和系统指令"></a>80x86 系统寄存器和系统指令</h2><p>为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，<br>EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、<br>含有分段和分页处理机制系统表的基地址、控制处理器操作的比特标志位。</p>
-<h3 id="eflags-寄存器"><a href="#eflags-寄存器" class="headerlink" title="eflags 寄存器"></a>eflags 寄存器</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/elfags.png" alt></p>
-<h3 id="内存管理寄存器"><a href="#内存管理寄存器" class="headerlink" title="内存管理寄存器"></a>内存管理寄存器</h3><p>处理器提供了4个内存管理寄存器，分别是GDTR、LDTR、IDTR和TR。用于指定分段内存管理所使用的系统表的基地址。</p>
-<p>上述4个寄存器都是段基地址寄存器，这些段含有分段机制的重要信息表。GDTR、LDTR、IDTR是用于存放描述符表的段。TR用于寻找一个特殊的任务状态段TSS(task state segment)。TSS段包含着当前执行任务的重要信息。</p>
-<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/sys-mm-register.png" alt></p>
-<ol>
-<li>全局描述符表寄存器GDTR。32位基地址+16位表长度。LGDT和SGDT分别用于加载和保存GDTR的值。机器刚加电时候，基地址默认为0，长度值默认为0xFFFF。在保护模式初始化过程中必须给 GDTR加载一个新值。</li>
-<li>中断描述符表寄存器IDTR。与GDTR类似。</li>
-<li>局部描述符表寄存器LDTR。32位基地址+16位（段限长和描述符属性值）</li>
-<li>任务寄存器TR。</li>
-</ol>
-<h3 id="控制寄存器"><a href="#控制寄存器" class="headerlink" title="控制寄存器"></a>控制寄存器</h3><p>控制寄存器用于控制盒确定处理器操作模式以及当前执行任务的特性。<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/cr.png" alt></p>
-<h2 id="保护模式内存管理"><a href="#保护模式内存管理" class="headerlink" title="保护模式内存管理"></a>保护模式内存管理</h2><h3 id="内存寻址"><a href="#内存寻址" class="headerlink" title="内存寻址"></a>内存寻址</h3><p>80x86提供了6个存放段选择符的段寄存器：CS、DS、SS、ES、FS、GS。</p>
-<ol>
-<li>其中CS总是用于寻址代码段、而SS总是用于堆栈段。在任何时刻由CS寻址的段称为当前代码段。此时EIP寄存器中包含了当前代码段内下一条要执行的指令的段内偏移地址。因此要执行的指令地址可比表示为CS:[EIP]。</li>
-<li>由段寄存器SS寻址的段成为当前堆栈段。栈顶由ESP寄存器内容指定，当前堆栈顶处于地址SS:[ESP]。帧底地址为SS:[EBP]。</li>
-</ol>
-<h3 id="地址变换"><a href="#地址变换" class="headerlink" title="地址变换"></a>地址变换</h3><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/segment.png" alt></p>
-<h4 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h4><p>段选择符、段描述符表、段描述符、段基地址、偏移量</p>
-<h4 id="分页机制"><a href="#分页机制" class="headerlink" title="分页机制"></a>分页机制</h4><p>略</p>
-<h4 id="保护"><a href="#保护" class="headerlink" title="保护"></a>保护</h4><ol>
-<li>任务间保护</li>
-<li>特权级保护</li>
-</ol>
-<h4 id="分段机制-1"><a href="#分段机制-1" class="headerlink" title="分段机制"></a>分段机制</h4><ol>
-<li>段的定义。段基地址+段限长+段属性。以上组成了段描述符</li>
-<li>段描述符。同上。使用段选择符在段描述符表中定位段描述符。得到段基地址。加上偏移量得到线性地址。</li>
-<li>段描述符表。GDT和LDT。存放段描述符的数组。</li>
-<li>段选择符。描述符索引+TI+RPL。代码段描述符、数据段描述符、系统描述符</li>
-<li>系统描述符。<ol>
-<li>局部描述符表的段描述符</li>
-<li>任务状态段描述符</li>
-<li>调用们描述符</li>
-<li>中断门描述符</li>
-<li>陷阱门描述符</li>
-<li>任务门描述符</li>
-</ol>
-</li>
-</ol>
-<p>略。</p>
-<h3 id="任务管理"><a href="#任务管理" class="headerlink" title="任务管理"></a>任务管理</h3><p>任务是处理器可以被分配调度、执行和挂起的一个工作单元。80x86提供了一种机制，这种机制可以用来保存任务的状态、分派任务执行以及从一个任务切换到另一个任务。当工作在保护模式下，处理器所有运行都在任务中。</p>
-<p>80x86提供了多任务的硬件支持。任务是一个正在运行的程序，或者是一个等待准备运行的程序。通过中断、异常、 跳转或调用，我们可以执行一个任务。</p>
-<p>任务切换和过程调用类似，但任务切换会保存更多的寄存器信息。这些信息被保存在TSS中。</p>
-<h4 id="任务的结构和状态"><a href="#任务的结构和状态" class="headerlink" title="任务的结构和状态"></a>任务的结构和状态</h4><p>任务有由任务执行空间和任务状态段组成。任务执行空间包括代码段、堆栈段和一个或者多个数据段。TSS指定了构成任务执行空间的各个段。</p>
-<p>一个任务用指向其TSS的段选择符来指定。当一个任务被加载进处理器中执行时，那么该任务的段选择符、基地址、段限长以及TSS段描述符都会被加载到任务寄存器TR中。</p>
-<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/tss.png" alt></p>
-
-          
+          80x86 系统寄存器和系统指令为了协助CPU执行初始化和控制系统操作，80x86提供了一个标志寄存器EFLAGS和几个系统寄存器，除了一些通用状态标志外，EFLAGS还包含了几个系统标志。这些系统标志用于控制任务切换、中断处理、指令跟踪以及权限访问。系统寄存器用于内存管理、控制处理器操作、含有分段
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/24/Linux-0-11-80x86保护模式及其编程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1098,76 +968,16 @@
       
         
           
-            <h3 id="as86汇编器"><a href="#as86汇编器" class="headerlink" title="as86汇编器"></a>as86汇编器</h3><p>在Linux0.11中，有两种汇编语言程序，分别是能产生16位代码的as86汇编器，使用配套的ld86链接器。另一种是GNU的汇编器gas（现在改名为as）<br>，使用GNU ld链接器来链接目标文件。</p>
-<p>在Linux0.11中，使用了as86和ald86来创建16位的启动引导扇区程序boot/bootsect.s和实模式下初始化设置程序boot/setup.s的二进制编码。</p>
-<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><p>汇编器专门用来把低级汇编语言翻译成含有机器码的二进制程序或者目标文件。汇编的命令行基本格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">as [选项] -o objfile srcfile</span><br></pre></td></tr></table></figure>
-
-<p>源文件是由换行字符结尾的一些列文本行组成的，虽然可以使用分号在一行上包含多个行，但通常汇编语言程序每行只包含一行语句。</p>
-<p>语句可以使空行，也可以是赋值语句、伪操作符语句和机器指令语句。</p>
-<ol>
-<li>赋值语句。例如 bootset = 0x700就是一个赋值语句</li>
-<li>伪操作符语句。通常不会产生任何代码，仅仅是汇编器使用的指示符，由伪操作码和0个或者多个操作数组成。每个操作码都是有点符号.开始。</li>
-<li>机器指令语句。机器指令语句是可执行机器指令的助记符，由操作码和0个或者多个操作数构成。可以有标号，也可以没有。</li>
-</ol>
-<p>汇编器产生的目标文件objfile通常至少包含三个段或区，即正文段.text，数据段.data和未初始化数据段.bss。</p>
-<ol>
-<li>.text 是一个已经初始化过的段，通常其中包含程序的执行代码和只读数据。</li>
-<li>.data 也是一个已经初始化过的段，通常包含有可读可写的数据。</li>
-<li>.bss  是一个未初始化的段。在执行程序被加载的时候，该段的内容被全部初始化成0。</li>
-</ol>
-<h4 id="as86汇编语言的编译和链接"><a href="#as86汇编语言的编译和链接" class="headerlink" title="as86汇编语言的编译和链接"></a>as86汇编语言的编译和链接</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">as86 -0 -a -o boot.o boot.s</span><br><span class="line">ld86 -0 -s -o boot boot.o</span><br><span class="line">dd bs=32 <span class="keyword">if</span>=boot of=/dev/fd0 skip=1</span><br></pre></td></tr></table></figure>
-
-<h3 id="GNU-as-汇编"><a href="#GNU-as-汇编" class="headerlink" title="GNU as 汇编"></a>GNU as 汇编</h3><p>除去之前的两个汇编文件，内核中的其他汇编程序均由gas来编译，并与C语言程序编译产生的模块链接。以下简称gas为as。</p>
-<p>略。</p>
-<h4 id="区和重定位"><a href="#区和重定位" class="headerlink" title="区和重定位"></a>区和重定位</h4><p>区表示了一个地址范围，操作系统将会以相同的方式对待和处理在该地址范围中的数据信息。例如，对于只读区，我们只能从该区中读取数据而不能写入。</p>
-<p>链接器ld会把输入的目标文件中的内容按照一定的规律组合成一个可执行程序。当as汇编器输出一个目标文件时，该目标文件中的代码被默认设置成从地址0开始。此后ld将会在链接过程中为不同的目标文件的各个部分分配不同的最终地址。ld会把程序中的字节块移动到程序运行时的地址处。这些块是作为固定单元进行移动的，他们的长度以及字节序都不会改变。这样的固定单元就被称作是区。</p>
-<p>为区分配运行时刻的地址的操作j就被称为重定位操作。</p>
-<p>在一个区被重定位时，为了让链接器ld知道哪些数据会发生变化以及如何修改这些数据，as汇编器也会往目标文件中写入所需要的重定位信息。为了执行重定位操作，在每次涉及目标文件的一个地址时，ld必须知道：</p>
-<ol>
-<li>目标文件对一个地址的引用是从什么地方算起的？</li>
-<li>该引用的字节长度是多少？</li>
-<li>该地址引用的是哪个区？值等于多少？</li>
-<li>对地址的引用与程序计数器pc相关吗？</li>
-</ol>
-<p>绝对地址区（absolute 区）。当链接器把各个目标文件组合在一起时，absolute区中的地址始终不变。尽管链接器在链接后绝不会把两个目标文件的data区安排在重叠的地址上，但是目标文件的absolute区必会重叠而覆盖。</p>
-<p>另外还有一个未定义区</p>
-<h4 id="子区"><a href="#子区" class="headerlink" title="子区"></a>子区</h4><p>略。</p>
-<h4 id="汇编指令"><a href="#汇编指令" class="headerlink" title="汇编指令"></a>汇编指令</h4><ol>
-<li>.align expr1 expr2 expr3。.align是汇编对齐指令，用于在当前子区中把位置计数器值设置到下一个指定存储边界处。</li>
-<li>.ascii “String”。 从位置计数器当前位置为字符串分配空间并存储字符串。可以逗号分开写出多个字符串。不会在每个字符串后添加0。</li>
-<li>.asciz “String”。 同上，但是会在每个字符串后添加null字符。</li>
-<li>.byte  expressions。该汇编命令定义0个或者多个用逗号分开的字节值。每个表达式的值是一个字节。<br>略。</li>
-</ol>
-<h4 id="嵌入汇编"><a href="#嵌入汇编" class="headerlink" title="嵌入汇编"></a>嵌入汇编</h4><p>C语言编程时可以在代码中内嵌汇编代码其格式为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">asm(</span><br><span class="line">    &quot;汇编语句&quot;</span><br><span class="line">    : 输出寄存器</span><br><span class="line">    : 输入寄存器</span><br><span class="line">    : 会被修改的寄存器</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p>除了第一行，后面带冒号的行都是可以被省略的。</p>
-<h4 id="寄存器变量"><a href="#寄存器变量" class="headerlink" title="寄存器变量"></a>寄存器变量</h4><p>GNU对C语言的另一个扩充时允许我们把一些变量值放到CPU寄存器中，即所谓寄存器变量。这样CPU就不用花费较长时间访问内存区取值。寄存器变量分为两种：</p>
-<ol>
-<li>全局寄存器变量</li>
-<li>局部寄存器变量</li>
-</ol>
-<h4 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h4><p>在程序中，通过把一个函数生命为inline，内联函数，就可以让gcc把函数代码集成到该函数的代码中去。这样处理可以去掉函数调用时进入和退出的开销，从而加快执行速度。</p>
-<h3 id="C语言与汇编程序的相互调用"><a href="#C语言与汇编程序的相互调用" class="headerlink" title="C语言与汇编程序的相互调用"></a>C语言与汇编程序的相互调用</h3><h4 id="c函数调用机制"><a href="#c函数调用机制" class="headerlink" title="c函数调用机制"></a>c函数调用机制</h4><p>在Linux内核程序boot/head.s执行完基本初始化操作之后，就会跳转执行init/main.c程序。那么head.s是如何把执行控制交给init/main.c程序的呢？</p>
-<ol>
-<li>栈帧结构和控制转移权方式。大多数CPU上的程序都是使用栈来支持函数调用操作的。栈被用来存储函数参数、存储返回信息、临时保存寄存器原有值以及存储局部数据。单个函数调用操作所使用的栈部分被称位栈帧机构。如下：</li>
-</ol>
-<p><img src="/images/stack-frame.png" alt></p>
-<p>栈帧的两端由两个指针来指定。寄存器ebp通常用作帧指针，而esp则用作栈指针。栈指针esp会随着数据的入栈和出栈而移动，因此函数中对大部分数据的访问都基于帧指针ebp进行。</p>
-<p>对于函数A调用函数B的情况，传递给B的参数包含在A的栈帧中。当A调用B时，函数A的返回地址（调用结束后继续执行的指令地址）被压入栈中，栈中该位置也明确指明了A栈帧的结束处。而B的栈帧则从随后的栈部分开始，即图中保存帧指针（ebp）的地方开始。再随后则用于存放任何保存的j寄存器的值以及函数的临时之。</p>
-<p>栈是往低地址方向扩展的。而esp指向当前栈顶处的元素。通过使用push和pop指令我们可以将数据压入栈中或从栈中弹出。</p>
-<p>指令call和ret用于处理函数调用和返回操作。</p>
-<ol>
-<li>调用call指令程序将返回地址压入栈中并调转到被调用函数处开始执行。返回地址是程序中紧跟指令call后面的一条指令的地址。</li>
-<li>返回指令ret用于弹出栈顶的地址并跳转到该地址处。使用该指令之前，需要先正确处理栈中的n内容，使得当前栈指针所指位置内容正是先前call指令保存到的返回地址。</li>
-<li>若返回值是一个正数或者指针，那么j寄存器eax将被默认用来传递返回值。</li>
-</ol>
-<p>略。</p>
-<h3 id="目标文件格式"><a href="#目标文件格式" class="headerlink" title="目标文件格式"></a>目标文件格式</h3><p>略。</p>
-<h3 id="Make程序和Makefile文件"><a href="#Make程序和Makefile文件" class="headerlink" title="Make程序和Makefile文件"></a>Make程序和Makefile文件</h3><p>make工具程序的主要用途是能自动地决定含有很多源程序文件的大型程序中哪些文件需要被重新编译，makefile是make工具程序的配置文件。</p>
-
-          
+          as86汇编器在Linux0.11中，有两种汇编语言程序，分别是能产生16位代码的as86汇编器，使用配套的ld86链接器。另一种是GNU的汇编器gas（现在改名为as），使用GNU ld链接器来链接目标文件。
+在Linux0.11中，使用了as86和ald86来创建16位的启动引导扇区程序boot
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/24/Linux-0-11-内核编程语言和环境笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1307,50 +1117,21 @@
       
         
           
-            <h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p>CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，</p>
-<ol>
-<li>地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。</li>
-<li>数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。</li>
-<li>控制总线，用于指挥执行的具体读写操作。</li>
-</ol>
-<p>在80386内部，其地址总线和数据总线都是32位的。其可寻址的地址空间范围是2sup32，从0到4GB。</p>
-<p>下图中的控制器都集成在了pc主板上，控制卡（或者称为适配器）则通过扩展卡槽与系统总线相连接。<br>git a<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/pc-structure.png" alt="test"></p>
-<h3 id="现代pc"><a href="#现代pc" class="headerlink" title="现代pc"></a>现代pc</h3><p>现代pc的主板主要使用2个超大规模芯片构成的芯片组或者芯片集组成：北桥芯片和南桥芯片。</p>
-<ol>
-<li>北桥。用于CPU、内存、视频接口，具有很高的传输速率。</li>
-<li>南桥。用来管理低速、中速组件。</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/modern-pc-structure.png" alt="test"></p>
-<h3 id="io寻址方式和访问控制方式"><a href="#io寻址方式和访问控制方式" class="headerlink" title="io寻址方式和访问控制方式"></a>io寻址方式和访问控制方式</h3><p>CPU为了访问io接口控制器或者控制卡上的数据和状态信息，需要首先指定他们的地址。这种地址就成为IO端口地址或者简称端口。端口地址的设置方法有两种：统一编址和独立编址。</p>
-<ol>
-<li>统一编址。将IO控制器中的端口地址归入存储器寻址空间范围内。</li>
-<li>独立编址。单独对待IO控制器和控制卡的地址，使用专门的IO指令来访问端口</li>
-</ol>
-<p>IBM兼容pc主要使用独立编址方式。采用独立的IO地址空间对控制设备的寄存器进行寻址和访问。</p>
-<p>IBM兼容pc也部分地使用了统一编址的方式。例如，CGA显示卡显示内存的地址就直接占用存储器地址的0xB800-0xBC00范围，若要让一个字符显示在屏幕上，可以直接使用内存操作指令往这个内存区域执行写操作。</p>
-<h3 id="接口访问控制"><a href="#接口访问控制" class="headerlink" title="接口访问控制"></a>接口访问控制</h3><p>pc机的io接口数据访问控制方式一般可采用：</p>
-<ol>
-<li>程序循环查询方式。浪费CPU时间。</li>
-<li>中断处理方式。需要中断控制器支持。</li>
-<li>DMA传输方式。需要DMA控制器支持。</li>
-</ol>
-<p>目前Linux操作系统主要使用了后两种方式。</p>
-<h3 id="主存储器、BIOS和CMOS存储器"><a href="#主存储器、BIOS和CMOS存储器" class="headerlink" title="主存储器、BIOS和CMOS存储器"></a>主存储器、BIOS和CMOS存储器</h3><h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><p>32为cpu的寻址范围已经达到了4GB，而ROM中的BIOS一直处于CPU能寻址的内存最高端位置处。</p>
-<h4 id="基本输出输出程序BIOS"><a href="#基本输出输出程序BIOS" class="headerlink" title="基本输出输出程序BIOS"></a>基本输出输出程序BIOS</h4><p>存放在ROM中的系统BIOS程序主要用于计算机开机时执行的系统各部分自检，建立起操作系统需要使用的各种配置表，例如中断向量表，硬盘参数表等。并把处理器和系统其余部分初始化到一个已知状态，为操作系统提供硬件设备接口服务。</p>
-<p>在机器上电之后，CPU会自动把代码段寄存器cs设置为0xF000，其段基地址则被设置为0xFFFFFFF0，段长度设置为64KB。而IP则被设置为0xFFF0，因此此时CPU代码指针指向0xFFFFFFF0处，即4G空间的最后64K的最后16字节处。这正是系统ROM BIOS程序的存放位置。 并且BIOS会在这里存放一条jmp指令，使得cpu跳转到最后64K范围内的某一条指令开始执行。</p>
-<h4 id="CMOS存储器"><a href="#CMOS存储器" class="headerlink" title="CMOS存储器"></a>CMOS存储器</h4><p>CMOS用来存放系统的实时时钟信息和系统硬件配置信息，通常和实时时钟芯片集成，使用io指令来访问。</p>
-<h3 id="控制器和控制卡"><a href="#控制器和控制卡" class="headerlink" title="控制器和控制卡"></a>控制器和控制卡</h3><h4 id="中断控制器"><a href="#中断控制器" class="headerlink" title="中断控制器"></a>中断控制器</h4><p>80386中的中断控制器用于实现io设备的中断控制存取方式，并且能为15个设备提供独立的中断控制功能。</p>
-<p>在计算机初始化的时候，CPU在内存0x000——0xFFF区域建立一个中断向量表。在内核初始化的阶段，Linux又重新对其进行了设置。<br><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter.png" alt></p>
-<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
-<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png" alt></p>
-<p>当一个pc计算机上电的时候，上图中的中断请求号会被ROM BIOS设置成下表中列出的中断向量号。Linux系统不直接使用该中断向量号，在内核初始化的时候，内核会重新设置对应。</p>
-<p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/inter-table.png" alt></p>
-<h4 id="DMA控制器"><a href="#DMA控制器" class="headerlink" title="DMA控制器"></a>DMA控制器</h4><p>DMA控制器的主要功能是让外部设备直接与内存进行数据传输来增强系统的性能，有了DMA控制器，外设和内存能在不受CPU控制的条件下进行传输。</p>
-<h4 id="定时器、计数器"><a href="#定时器、计数器" class="headerlink" title="定时器、计数器"></a>定时器、计数器</h4><p>定时器按照一定的时间间隔发送中断请求信号。中断请求时Linux内核工作的脉搏，用于定时切换当前执行的任务和统计每个任务使用的系统时间资源量。</p>
-<h4 id="键盘控制器"><a href="#键盘控制器" class="headerlink" title="键盘控制器"></a>键盘控制器</h4><p>接受键盘输入请求。</p>
-<h4 id="串行控制卡"><a href="#串行控制卡" class="headerlink" title="串行控制卡"></a>串行控制卡</h4><h4 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h4><h4 id="软盘和硬盘控制器"><a href="#软盘和硬盘控制器" class="headerlink" title="软盘和硬盘控制器"></a>软盘和硬盘控制器</h4><p><img src="https://raw.githubusercontent.com/xdushepherd91/xdushepherd91.github.io/master/disk-structure.png" alt></p>
+          概览CPU通过地址线，数据线和控制信号线组成的本地总线与系统的其他部分进行数据通信。其中，
 
-          
+地址总线，用于提供内存或者io设备的地址，指明需要读写数据的具体位置。
+数据总线，用于在CPU和内存或者io设备之间提供数据传输的通道。
+控制总线，用于指挥执行的具体读写操作。
+
+在80386内部，其地址总
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/24/Linux-0-11-微型计算机组成结构笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1490,49 +1271,23 @@
       
         
           
-            <h3 id="类注释总结"><a href="#类注释总结" class="headerlink" title="类注释总结"></a>类注释总结</h3><p>ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：</p>
-<ol>
-<li>没有容量限制。</li>
-<li>非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。</li>
-<li>不接受null数据。</li>
-<li>作为一个栈比Stack类要快。</li>
-<li>作为队列比LinkedList类要快。</li>
-</ol>
-<p>同其他的集合类一样，该类的iterator方法是fail-fast的，除了通过iterator本身的remove方法，任何在iterator创建之后对deque的删除操作，都会出发ConcurrentModificationException异常。</p>
-<h3 id="类初始化相关"><a href="#类初始化相关" class="headerlink" title="类初始化相关"></a>类初始化相关</h3><h4 id="实例变量"><a href="#实例变量" class="headerlink" title="实例变量"></a>实例变量</h4><p>可以看到以下几点：</p>
-<ol>
-<li>ArrayDeque内部使用的是一个对象数组来存储元素的。</li>
-<li>使用了一个头指针head，指向了当前可以删除的元素下标。</li>
-<li>使用了一个尾指针tail，指向了下一个可以添加数据的位置下表。</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> Object[] elements;</span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> head;</span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> tail;</span><br></pre></td></tr></table></figure>
+          类注释总结ArrayDeque是Deque接口的一个可变数组实现，该实现有以下一些特点：
 
-<h3 id="私有工具方法介绍"><a href="#私有工具方法介绍" class="headerlink" title="私有工具方法介绍"></a>私有工具方法介绍</h3><h4 id="calculateSize方法"><a href="#calculateSize方法" class="headerlink" title="calculateSize方法"></a>calculateSize方法</h4><p>calculateSize方法通过位运算的方式，得到了一个恰好大于入参numElements的一个2的次幂。方法解释如下：</p>
-<ol>
-<li>对于任何入参numElements，必定有一个最高位1，通过一次右移，并与原来的numElements进行或操作。必定得到一个高两位为1的数字。</li>
-<li>对1中得到的高两位为1的数字a，再右移两位得到数字b ，两者再进行或操作，得到一个高四位为1的数字</li>
-<li>以此类推，我们可以把从入参numElements最高位1后的所有位都变为1。</li>
-<li>由于java。中的int位32位，那么我们可以保证在右移16位后一定可以把任何一个int型入参变为高位后所有位都为1的数字</li>
-<li>对上述得到的数字加1，即得到了一个2的次幂，且恰好大于入参numElements</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_INITIAL_CAPACITY = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ******  Array allocation and resizing utilities ******</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculateSize</span><span class="params">(<span class="keyword">int</span> numElements)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> initialCapacity = MIN_INITIAL_CAPACITY;</span><br><span class="line">    <span class="comment">// Find the best power of two to hold elements.</span></span><br><span class="line">    <span class="comment">// Tests "&lt;=" because arrays aren't kept full.</span></span><br><span class="line">    <span class="keyword">if</span> (numElements &gt;= initialCapacity) &#123;</span><br><span class="line">        initialCapacity = numElements;</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">1</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">2</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">4</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  <span class="number">8</span>);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">        initialCapacity++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)   <span class="comment">// Too many elements, must back off</span></span><br><span class="line">            initialCapacity &gt;&gt;&gt;= <span class="number">1</span>;<span class="comment">// Good luck allocating 2 ^ 30 elements</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> initialCapacity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+没有容量限制。
+非线程安全。这意味着在多线程中使用的时候，需要添加一定的同步手段。
+不接受null数据。
+作为一个栈比Stack类要快。
+作为队列比LinkedList类要快。
 
-<h4 id="allocateElements方法"><a href="#allocateElements方法" class="headerlink" title="allocateElements方法"></a>allocateElements方法</h4><p>参考上一节，allocateElements方法不难理解。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">allocateElements</span><span class="params">(<span class="keyword">int</span> numElements)</span> </span>&#123;</span><br><span class="line">    elements = <span class="keyword">new</span> Object[calculateSize(numElements)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="doubleCapacity方法"><a href="#doubleCapacity方法" class="headerlink" title="doubleCapacity方法"></a>doubleCapacity方法</h4><p>顾名思义，对容量进行翻倍。具体看看如何实现：</p>
-<ol>
-<li>这里假定头指针和尾指针相遇了。</li>
-<li>计算当前数组的长度n。</li>
-<li>计算头指针右侧的数据个数。</li>
-<li>对n进行左移一位操作，得到新的数组容量newCapacity。n为2的次幂。</li>
-<li>初始化一个容量为newCapacity的新的数组。</li>
-<li>将原来的数组元素复制到新数组中。</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doubleCapacity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> head == tail;</span><br><span class="line">    <span class="keyword">int</span> p = head;</span><br><span class="line">    <span class="keyword">int</span> n = elements.length;</span><br><span class="line">    <span class="keyword">int</span> r = n - p; <span class="comment">// number of elements to the right of p</span></span><br><span class="line">    <span class="keyword">int</span> newCapacity = n &lt;&lt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (newCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Sorry, deque too big"</span>);</span><br><span class="line">    Object[] a = <span class="keyword">new</span> Object[newCapacity];</span><br><span class="line">    System.arraycopy(elements, p, a, <span class="number">0</span>, r);</span><br><span class="line">    System.arraycopy(elements, <span class="number">0</span>, a, r, p);</span><br><span class="line">    elements = a;</span><br><span class="line">    head = <span class="number">0</span>;</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
+同其他的集合类一样，该类的i
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/09/jdk1-8-ArrayDeque源代码阅读笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
