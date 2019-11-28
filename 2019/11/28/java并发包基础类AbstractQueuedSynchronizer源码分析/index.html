@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="linux,底层,文件系统,">
+  <meta name="keywords" content="jdk,">
 
 
 
@@ -86,20 +86,18 @@
 
 
 
-<meta name="description" content="概述在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存最近使用的inode数据。 对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码">
-<meta name="keywords" content="linux,底层,文件系统">
+<meta name="description" content="概述AbstractQueuedSynchronizer代码之前读过，没有写个总结，这次在看线程池源码的时候又遇到了，发现忘记了很多关键性的内容，因此，特地翻出来，再看看">
+<meta name="keywords" content="jdk">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux0.11中的mount工作流程">
-<meta property="og:url" content="http://yoursite.com/2019/11/22/linux0-11中的mount工作流程/index.html">
+<meta property="og:title" content="java并发包基础类AbstractQueuedSynchronizer源码分析">
+<meta property="og:url" content="http://yoursite.com/2019/11/28/java并发包基础类AbstractQueuedSynchronizer源码分析/index.html">
 <meta property="og:site_name" content="拾忆">
-<meta property="og:description" content="概述在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存最近使用的inode数据。 对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码">
+<meta property="og:description" content="概述AbstractQueuedSynchronizer代码之前读过，没有写个总结，这次在看线程池源码的时候又遇到了，发现忘记了很多关键性的内容，因此，特地翻出来，再看看">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/images/linux-kernel/mount.png">
 <meta property="og:updated_time" content="2019-11-28T10:04:45.098Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux0.11中的mount工作流程">
-<meta name="twitter:description" content="概述在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存最近使用的inode数据。 对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码">
-<meta name="twitter:image" content="http://yoursite.com/images/linux-kernel/mount.png">
+<meta name="twitter:title" content="java并发包基础类AbstractQueuedSynchronizer源码分析">
+<meta name="twitter:description" content="概述AbstractQueuedSynchronizer代码之前读过，没有写个总结，这次在看线程池源码的时候又遇到了，发现忘记了很多关键性的内容，因此，特地翻出来，再看看">
 
 
 
@@ -129,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/11/22/linux0-11中的mount工作流程/">
+  <link rel="canonical" href="http://yoursite.com/2019/11/28/java并发包基础类AbstractQueuedSynchronizer源码分析/">
 
 
 
 
 
-  <title>linux0.11中的mount工作流程 | 拾忆</title>
+  <title>java并发包基础类AbstractQueuedSynchronizer源码分析 | 拾忆</title>
   
 
 
@@ -272,7 +270,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/22/linux0-11中的mount工作流程/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/28/java并发包基础类AbstractQueuedSynchronizer源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王千一">
@@ -289,7 +287,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">linux0.11中的mount工作流程</h1>
+          <h1 class="post-title" itemprop="name headline">java并发包基础类AbstractQueuedSynchronizer源码分析</h1>
         
 
         <div class="post-meta">
@@ -301,8 +299,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-22T01:47:00+00:00">
-                2019-11-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-28T09:55:02+00:00">
+                2019-11-28
               </time>
             
 
@@ -324,8 +322,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-内核/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux 内核</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -361,38 +359,17 @@
       
 
       
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在linux0.11内核中，有全局的super_block数组(大小为8)和全局的inode数组(大小为32)。super block数组的大小为8，<br>以为着最多可以常驻8个文件系统的超级块，也就是说最多可以挂载8个不同的文件系统。inode数组的主要作用是为了缓存<br>最近使用的inode数据。</p>
-<p>对于超级块和inode这里不做过多的介绍，相关的博客较多，不过，下面的图片是我在梳理流程的时候，根据源码绘制的，里面包含了超级块和inode的一些细节，以及在挂载过程中使用到的函数。</p>
-<p><img src="/images/linux-kernel/mount.png" alt></p>
-<h3 id="关于缓冲头和缓冲区的介绍"><a href="#关于缓冲头和缓冲区的介绍" class="headerlink" title="关于缓冲头和缓冲区的介绍"></a>关于缓冲头和缓冲区的介绍</h3><p>在linux0.11版本的内核中，当内核从文件系统中读取到了指定块的数据之后，会将其缓冲在高速缓冲区中，而缓冲区头的作用就是标记其指向的缓冲区属于哪个设备的哪个数据块。</p>
-<p>在我们挂载文件系统的过程中，必然涉及到了这些内容，所以这里实现提一下。</p>
-<h3 id="根目录的挂载流程"><a href="#根目录的挂载流程" class="headerlink" title="根目录的挂载流程"></a>根目录的挂载流程</h3><p>在linux内核启动的时候，必然要对根目录/进行挂载，其挂载流程如下：</p>
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>AbstractQueuedSynchronizer代码之前读过，没有写个总结，这次在看线程池源码的时候又遇到了，发现忘记了很多关键性的内容，因此，特地翻出来，再看看</p>
+<a id="more"></a>
+
+<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><h4 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h4><p>AQS的内部类，其核心变量有：</p>
 <ol>
-<li><p>初始化超级块数组。同时初始化了文件数组（这个不是很理解）</p>
-</li>
-<li><p>使用read_super函数读取根设备的超级块数据，并放置在超级块数组的第一项中</p>
-</li>
-<li><p>使用iget函数读取根设备的第一个inode,并将其存放在inode数组的第一项中</p>
-</li>
-<li><p>更新inode的引用计数，保证该inode不会被其他进程回收。</p>
-</li>
-<li><p>将该super block的s_isup和s_imount为该inode，表示该superblock是根super_block并且其挂载点是该inode</p>
-</li>
-<li><p>将启动进程的root工作更新为该inode，将启动进程的当前工作目录更新为该inode。</p>
-</li>
-<li><p>打印一些与根目录元数据相关的信息</p>
-</li>
-<li><p>挂载结束</p>
-</li>
+<li>waitStatus</li>
+<li>prev</li>
+<li>next</li>
+<li>thread</li>
+<li>nextWaiter</li>
 </ol>
-<h3 id="其他文件系统的挂载分析"><a href="#其他文件系统的挂载分析" class="headerlink" title="其他文件系统的挂载分析"></a>其他文件系统的挂载分析</h3><p>我们很容易可以推出其他文件系统的挂载流程，与根文件系统的挂载如出一辙，不同的是，被挂载文件系统super_block的s_isup不会被置位，表示其不是根文件系统</p>
-<h3 id="关于文件打开过程中的疑问"><a href="#关于文件打开过程中的疑问" class="headerlink" title="关于文件打开过程中的疑问"></a>关于文件打开过程中的疑问</h3><p>分析mount流程的动力在于，在我们去打开一个mount目录的文件的时候，内核中的执行流程如何对其进行判断，答案是置换。文件打开的流程分析：</p>
-<ol>
-<li>从根inode或者进程的当前工作目录inode开始，向下查找inode。</li>
-<li>当遇到一个挂载点inode(通过inode的i_mount属性判断)，内核在超级块数组中查找挂载在该inode的超级块，获取到超级块的dev设备号</li>
-<li>从对应设备号的设备读取第一个inode，替换为挂载点inode，就完成了mount点的转换。</li>
-</ol>
-<p>当然，在上述过程中，遇到问题需要报错，遇到可以缓存的可以缓存，这里仅仅叙述了主要执行流程。</p>
 
       
     </div>
@@ -410,11 +387,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/linux/" rel="tag"># linux</a>
-          
-            <a href="/tags/底层/" rel="tag"># 底层</a>
-          
-            <a href="/tags/文件系统/" rel="tag"># 文件系统</a>
+            <a href="/tags/jdk/" rel="tag"># jdk</a>
           
         </div>
       
@@ -427,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/11/18/git使用技巧记录——日常更新/" rel="next" title="git使用技巧记录——日常更新">
-                <i class="fa fa-chevron-left"></i> git使用技巧记录——日常更新
+              <a href="/2019/11/28/java线程池的实现原理分析/" rel="next" title="java线程池的实现原理分析">
+                <i class="fa fa-chevron-left"></i> java线程池的实现原理分析
               </a>
             
           </div>
@@ -436,10 +409,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/11/27/git使用技巧—压缩琐碎的历史提交/" rel="prev" title="git使用技巧—压缩琐碎的历史提交">
-                git使用技巧—压缩琐碎的历史提交 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -571,7 +540,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于缓冲头和缓冲区的介绍"><span class="nav-number">2.</span> <span class="nav-text">关于缓冲头和缓冲区的介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根目录的挂载流程"><span class="nav-number">3.</span> <span class="nav-text">根目录的挂载流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他文件系统的挂载分析"><span class="nav-number">4.</span> <span class="nav-text">其他文件系统的挂载分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于文件打开过程中的疑问"><span class="nav-number">5.</span> <span class="nav-text">关于文件打开过程中的疑问</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组件"><span class="nav-number">2.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Node"><span class="nav-number">2.1.</span> <span class="nav-text">Node</span></a></li></ol></li></ol></div>
             
 
           </div>
