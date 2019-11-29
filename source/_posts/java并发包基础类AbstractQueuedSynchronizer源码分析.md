@@ -222,13 +222,19 @@ enq方法的主要目的就是将其加入到队列中去，那么我们来看�
       return false;
   }
 ````
-首先，tryRelase方法是子类实现的，这里先不关注。我们先来看看unparkSuccessor方法吧
+release方法的调用逻辑还是比较简单的:
+1. 调用子类的tryRelease方法，一般在ReentrantLock等类中实现。
+   1. 如果该方法实现返回为true，即当前线程已经完全释放了了锁，进入if判断，调用unparkSuccessor来唤醒等待线程。该方法下一节有详细介绍。
+   2. tryRelease方法返回为false，说明锁未完全释放，release方法返回false。
+
+
+
 
 #### unparkSuccessor方法
 
 对于该方法，需要和前面的parkAndCheckInterrupt方法对应起来，我们现在要做的事情就是将之前被park的线程unpark，使其重新进入线程的调度队列中。具体逻辑
 1. 更新当前线程对应的node的waitStatus状态
-2. 寻找下一个waitStatus未被cancelled的的node
+2. 找到head后的第一个未被cancele的节点 
 3. 使用LockSupport.unpark将2中找到的node重新放入线程调度队列中 
 
 ````java
@@ -249,6 +255,246 @@ enq方法的主要目的就是将其加入到队列中去，那么我们来看�
           LockSupport.unpark(s.thread);
   }
 ````
+
+### condition相关
+
+在使用可重入锁的时候，一直很好奇condition是怎么实现的，这其实也是在AQS中实现的，AQS中的ConditionObject实现了Condition。
+
+#### 组件
+
+在ConditionObject类中，有两个node类型的组件
+1. firstWaiter
+2. lastWaiter
+
+那么不言自明，ConditionObject内部也是有一个队列的，即由上两个组件组成的等待队列
+
+
+#### await方法
+
+
+
+##### unlinkCancelledWaiters方法
+
+该方法的目的是，从以firstWaiter为头，lastWaiter为尾的等待队列上，从firstWaiter开始，
+对waitStatus不为CONDITION状态的节点，进行剔除动作。具体逻辑
+1. 从头结点开始，将当前节点引用赋值给变量t，将next设置为t.nextWatier引用。
+2. 如果t不为CONDITION状态，那么，我们就要考虑剔除t了。具体过程
+   1. 如果trail还未设置，那么直接领firstWaiter=next
+   2. 否则，trail设置了的话，将t.nextWaiter引用赋值给trail.next即可。
+   3. 如果next为null，那么说明没有后续等待节点了，直接将trail引用赋值给lastWaiter即可，整个方法就要结束了。
+3. 如果是的话，就把t的引用在给trail（trail是用来记录上一个有效node的引用的）。
+4. 将next赋值给t，循环继续，知道赋值给t的next为null的时候结束
+
+````java
+    private void unlinkCancelledWaiters() {
+        Node t = firstWaiter;
+        Node trail = null;
+        while (t != null) {
+            Node next = t.nextWaiter;
+            if (t.waitStatus != Node.CONDITION) {
+                t.nextWaiter = null;
+                if (trail == null)
+                    firstWaiter = next;
+                else
+                    trail.nextWaiter = next;
+                if (next == null)
+                    lastWaiter = trail;
+            }
+            else
+                trail = t;
+            t = next;
+        }
+    }
+````
+
+
+##### addConditionWaiter方法
+
+逻辑：
+1. 找到lastWaiter，并向前查找到第一个未被取消的condition为止。
+2. 新建一个waitStatus为Node.CONDITION,thread为当前线程的节点。
+3. 如果此时的t为null，那么firstWaiter设置为当前节点
+4. 否则，将lastWaiter的nextWaiter设置为当前节点
+5. 将lastWaiter设置为当前node
+
+注意：这里之所以在变量修改的时候不需要加锁，是因为我们当前在锁内部，因此天然安全。
+
+````java
+    private Node addConditionWaiter() {
+        Node t = lastWaiter;
+        // If lastWaiter is cancelled, clean out.
+        if (t != null && t.waitStatus != Node.CONDITION) {
+            unlinkCancelledWaiters();
+            t = lastWaiter;
+        }
+        Node node = new Node(Thread.currentThread(), Node.CONDITION);
+        if (t == null)
+            firstWaiter = node;
+        else
+            t.nextWaiter = node;
+        lastWaiter = node;
+        return node;
+    }
+````
+##### fullyRelease方法
+
+方法的目的很简单，那就是释放锁，由于同一个线程可能多次获取锁，所以AQS的state是可能比1更大的，该方法的逻辑就是彻底的释放锁，
+将AQS的state变为0，将锁释放
+
+````java
+    final int fullyRelease(Node node) {
+        boolean failed = true;
+        try {
+            int savedState = getState();
+            if (release(savedState)) {
+                failed = false;
+                return savedState;
+            } else {
+                throw new IllegalMonitorStateException();
+            }
+        } finally {
+            if (failed)
+                node.waitStatus = Node.CANCELLED;
+        }
+    }
+
+````
+
+##### isOnSyncQueue方法
+
+该方法检查入参node是否在队列中，逻辑如下：
+1. 前两个if判断很容易理解，快速确定node在或者不在一个队列中
+2. findNodeFromTail方法的逻辑是从AQS等待队列的尾部开始，向前查找，
+如果查找到了一个节点正好等于当前节点，那么返回true，否则一直查找，
+直到查找将队列遍历完毕还未找到的话，就返回false。
+
+````java
+    final boolean isOnSyncQueue(Node node) {
+        if (node.waitStatus == Node.CONDITION || node.prev == null)
+            return false;
+        if (node.next != null) // If has successor, it must be on queue
+            return true;
+        return findNodeFromTail(node);
+    }
+
+    private boolean findNodeFromTail(Node node) {
+        Node t = tail;
+        for (;;) {
+            if (t == node)
+                return true;
+            if (t == null)
+                return false;
+            t = t.prev;
+        }
+    }    
+````
+
+####### 小结
+
+    isOnSyncQueue如果一直返回false，wait方法就会在一个循环中持续执行，并且有可能被park掉。
+总之，如果该方法一直返回为true，说明当前线程一直在ConditonObject的等待队列里，而未能进入到
+AQS的锁队列中去，需要一直等待。
+    这就是condition的wait方法的核心逻辑所在
+
+##### acquireQueued方法
+
+该方法在前文中有介绍，再去复习一下即可。这里简单说一下其目的。
+
+在当前节点重新进入到AQS的等待队列中去的时候，使用该方法重新获取到锁，并设置为之前的的重入次数。
+
+##### 总结
+
+结合前面小结的内容，我们可以很好理解await方法如何实现的了，后面再来看看signal方法吧。
+
+````java
+    public final void await() throws InterruptedException {
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        Node node = addConditionWaiter();
+        int savedState = fullyRelease(node);
+        int interruptMode = 0;
+        while (!isOnSyncQueue(node)) {
+            LockSupport.park(this);
+            if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+                break;
+        }
+        if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
+            interruptMode = REINTERRUPT;
+        if (node.nextWaiter != null) // clean up if cancelled
+            unlinkCancelledWaiters();
+        if (interruptMode != 0)
+            reportInterruptAfterWait(interruptMode);
+    }
+````
+
+#### signal方法
+
+首先声明，在这些方法执行的时候，是不存在竞争的可能的，这是在锁内部执行的。
+
+####@　doSignal方法
+
+在doSignal内部，其执行逻辑是
+1. 首先将当前节点first的nextWaiter节点引用记录到firstWaiter记录下来。
+2. 判断记录的nextWaiter是否为null，是的话，说明到了队尾，需要把lastWaier设置为null了。
+3. 当前节点的nextWaiter设置为null（gc）。
+4. 如果transferForSignal方法执行返回为true，说明将当前节点加入到了AQS的等待队列。循环结束。
+5. 如果返回为false，即node的waitStatus在设置的时候不符合预期（见下文）,我们要直接跳过该节点了。
+6. 将当前节点记录为之前存下来的nextWaiter节点，如果其部位null，说明还有线程在等待，那么循环继续，否则
+循环结束。
+
+我们看看transferForSignal方法的逻辑吧：
+1. 如果试图将当前node的waitStatus通过cas设置为0失败，那么就返回false，上述的循环继续。
+2. 如果设置成功，那就需要将当前节点加入到AQS的锁队列中去，以为这当前node对应线程马上就可以
+有资格获取到锁了。
+3. 在enq入队后，会将node的前一个node返回来，如果
+
+````java
+    private void doSignal(Node first) {
+        do {
+            if ( (firstWaiter = first.nextWaiter) == null)
+                lastWaiter = null;
+            first.nextWaiter = null;
+        } while (!transferForSignal(first) &&
+                    (first = firstWaiter) != null);
+    }
+
+    final boolean transferForSignal(Node node) {
+
+        if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+            return false;
+
+        Node p = enq(node);
+        int ws = p.waitStatus;
+        if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+            LockSupport.unpark(node.thread);
+        return true;
+    }
+````
+
+#### 小节
+
+通过上文，我们可以很容易理解signal函数的逻辑：将等待队列中的第一个节点加入到
+AQS的等待队列中去。
+
+````java
+    public final void signal() {
+        if (!isHeldExclusively())
+            throw new IllegalMonitorStateException();
+        Node first = firstWaiter;
+        if (first != null)
+            doSignal(first);
+    }
+````
+
+
+### 总结
+
+本文大的分为两个部分：
+1. acquire和release。对应了lock和unlock方法。
+2. condition.await和condition.signal方法。
+
+有一个遗留问题，就是waitStatus的状态转换全面梳理未进行，这个后续再来看看吧。
+
 
 
 
