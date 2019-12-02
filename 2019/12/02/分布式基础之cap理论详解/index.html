@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="开发工具,git使用技巧,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -86,26 +86,15 @@
 
 
 
-<meta name="description" content="概述在开发runc仿制品toy-container的时候，在调试过程中，经常会对代码做简单的修改，然后做了提交，虽然有意识的使用git commit –amend来共享上一次提交的日志，但是，不免还是会有一些琐碎的提交出现，因此想要使用git提供的命令行工具，将历史提交给压缩一下，让提交变得整洁一些。">
-<meta name="keywords" content="开发工具,git使用技巧">
+<meta name="keywords" content="java，linux，life">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git使用技巧—压缩琐碎的历史提交">
-<meta property="og:url" content="http://yoursite.com/2019/11/27/git使用技巧—压缩琐碎的历史提交/index.html">
+<meta property="og:title" content="分布式基础之cap理论详解">
+<meta property="og:url" content="http://yoursite.com/2019/12/02/分布式基础之cap理论详解/index.html">
 <meta property="og:site_name" content="拾忆">
-<meta property="og:description" content="概述在开发runc仿制品toy-container的时候，在调试过程中，经常会对代码做简单的修改，然后做了提交，虽然有意识的使用git commit –amend来共享上一次提交的日志，但是，不免还是会有一些琐碎的提交出现，因此想要使用git提供的命令行工具，将历史提交给压缩一下，让提交变得整洁一些。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/1.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/2.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/4.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/5.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/6.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/7.png">
-<meta property="og:image" content="http://yoursite.com/images/git-rebase/8.png">
 <meta property="og:updated_time" content="2019-12-02T11:30:58.420Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="git使用技巧—压缩琐碎的历史提交">
-<meta name="twitter:description" content="概述在开发runc仿制品toy-container的时候，在调试过程中，经常会对代码做简单的修改，然后做了提交，虽然有意识的使用git commit –amend来共享上一次提交的日志，但是，不免还是会有一些琐碎的提交出现，因此想要使用git提供的命令行工具，将历史提交给压缩一下，让提交变得整洁一些。">
-<meta name="twitter:image" content="http://yoursite.com/images/git-rebase/1.png">
+<meta name="twitter:title" content="分布式基础之cap理论详解">
 
 
 
@@ -135,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/11/27/git使用技巧—压缩琐碎的历史提交/">
+  <link rel="canonical" href="http://yoursite.com/2019/12/02/分布式基础之cap理论详解/">
 
 
 
 
 
-  <title>git使用技巧—压缩琐碎的历史提交 | 拾忆</title>
+  <title>分布式基础之cap理论详解 | 拾忆</title>
   
 
 
@@ -278,7 +267,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/27/git使用技巧—压缩琐碎的历史提交/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/02/分布式基础之cap理论详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王千一">
@@ -295,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">git使用技巧—压缩琐碎的历史提交</h1>
+          <h1 class="post-title" itemprop="name headline">分布式基础之cap理论详解</h1>
         
 
         <div class="post-meta">
@@ -307,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-27T01:37:54+00:00">
-                2019-11-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-02T11:28:58+00:00">
+                2019-12-02
               </time>
             
 
@@ -317,28 +306,6 @@
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/git/" itemprop="url" rel="index">
-                    <span itemprop="name">git</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -367,25 +334,7 @@
       
 
       
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在开发runc仿制品<a href="https://github.com/xdushepherd91/toy-container" target="_blank" rel="noopener">toy-container</a>的时候，在调试过程中，经常会对代码做简单的修改，<br>然后做了提交，虽然有意识的使用git commit –amend来共享上一次提交的日志，但是，不免还是会有一些琐碎的提交出现，因此想要使用git提供的<br>命令行工具，将历史提交给压缩一下，让提交变得整洁一些。</p>
-<a id="more"></a>
-
-<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>git checkout -b reabse-branch  //新建一个分支，防止在rebase期间出现了错误操作，影响了整个代码库<br>git rebase -i start-point // rebase操作的起始提交，<br>edit rebase file // 上一步中的命令会自动打开一个文本编辑框，我们可以在其中指定我们如何压缩提交<br>solve conflict //*  在rebase过程中，可能出现冲突，需要手动解决<br>git add . //* 如果出现了冲突，我们在解决了之后，将其添加到index中<br>git rebase –continue / git rebase –abort // * 如果出现了冲突，解决完之后，执行continue就可以完成rebase操作，否则，执行abort放弃此次rebase操作</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><h4 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h4><p>首先是创建一个有多次提交的项目，如下:<br><img src="/images/git-rebase/1.png" alt></p>
-<h4 id="压缩提交"><a href="#压缩提交" class="headerlink" title="压缩提交"></a>压缩提交</h4><p>接下来，我想要将提交3和提交2合并为同一个提交，提交4和提交5合并为同一个提交，命令如下:<br><img src="/images/git-rebase/2.png" alt></p>
-<p>git rebase -i 77b91cc执行得到如下界面:<br><img src="/images/git-rebase/4.png" alt></p>
-<p><strong>注意:文件中并未包含77b91cc</strong>,可以看到，pick开头的信息是按照时间序逐行书写的，并且下方注释部分有操作教程，我们的目的是<br>分别合并提交2和提交3，提交4和提交5，那么根据教程方法如下：<br><img src="/images/git-rebase/5.png" alt></p>
-<h4 id="重新编辑提交信息"><a href="#重新编辑提交信息" class="headerlink" title="重新编辑提交信息"></a>重新编辑提交信息</h4><p>保存该文件(使用vim的保存方式),会得到如下文件界面，该界面是用来编写压缩之后的提交日志的。<br><img src="/images/git-rebase/6.png" alt></p>
-<p>我们此次修改2和3压缩后的提交信息，不修改4和5压缩后的提交信息，做个对比。<br><img src="/images/git-rebase/7.png" alt></p>
-<h4 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h4><p>结束了上述一通操作，我们看看现在的历史提交信息是否变成了我们想要的样子？答案是肯定的。见下图<br><img src="/images/git-rebase/8.png" alt></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文仅仅是一个简单的git rebase -i进行提交日志合并的介绍和示例，并未包含以下一些情况：</p>
-<ol>
-<li>分支合并解决冲突之后的提交日志合并</li>
-<li>rebase过程中出现冲突解决</li>
-<li>其他</li>
-</ol>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://segmentfault.com/a/1190000007748862" target="_blank" rel="noopener">(Git)合并多个commit</a></p>
-
+        <a id="more"></a>
       
     </div>
     
@@ -400,14 +349,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/开发工具/" rel="tag"># 开发工具</a>
-          
-            <a href="/tags/git使用技巧/" rel="tag"># git使用技巧</a>
-          
-        </div>
-      
 
       
       
@@ -417,8 +358,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/11/22/linux0-11中的mount工作流程/" rel="next" title="linux0.11中的mount工作流程">
-                <i class="fa fa-chevron-left"></i> linux0.11中的mount工作流程
+              <a href="/2019/11/28/java并发包基础类AbstractQueuedSynchronizer源码分析/" rel="next" title="java并发包基础类AbstractQueuedSynchronizer源码分析">
+                <i class="fa fa-chevron-left"></i> java并发包基础类AbstractQueuedSynchronizer源码分析
               </a>
             
           </div>
@@ -426,10 +367,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/11/28/java线程池的实现原理分析/" rel="prev" title="java线程池的实现原理分析">
-                java线程池的实现原理分析 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -481,17 +418,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -551,22 +479,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">2.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建项目"><span class="nav-number">3.1.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#压缩提交"><span class="nav-number">3.2.</span> <span class="nav-text">压缩提交</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重新编辑提交信息"><span class="nav-number">3.3.</span> <span class="nav-text">重新编辑提交信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看日志"><span class="nav-number">3.4.</span> <span class="nav-text">查看日志</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
