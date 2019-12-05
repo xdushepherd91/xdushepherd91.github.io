@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="概述在平时的工作中，难免遇到重装系统，换电脑之类的问题，这些问题解决之后，就要重新搭建我们的开发环境，这就包括idea的安装和配置问题了，本篇文章，旨在记录搭建idea开发环境的各个方面，激活，汉化，插件，类注释，方法注释等等。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-05T07:56:53.732Z">
+<meta property="og:updated_time" content="2019-12-05T08:00:29.063Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="idea开发环境配置指引手册">
 <meta name="twitter:description" content="概述在平时的工作中，难免遇到重装系统，换电脑之类的问题，这些问题解决之后，就要重新搭建我们的开发环境，这就包括idea的安装和配置问题了，本篇文章，旨在记录搭建idea开发环境的各个方面，激活，汉化，插件，类注释，方法注释等等。">
@@ -374,27 +374,27 @@
 <p>将不是驼峰格式的名称，快速转成驼峰格式，安装好后，选中要修改的名称，按快捷键shift+alt+u。</p>
 <p>可有可无，习惯了还是比较有用的。　</p>
 <h4 id="Rainbow-Brackets"><a href="#Rainbow-Brackets" class="headerlink" title="Rainbow Brackets"></a>Rainbow Brackets</h4><p>安装了用一下就知道了，帮助我们快速确认代码块。</p>
-<h3 id="类注释和方法注释"><a href="#类注释和方法注释" class="headerlink" title="类注释和方法注释"></a>类注释和方法注释</h3><p>关于这块的，参考<a href="https://yashuning.github.io/2018/04/28/IntelliJ-IDEA%E6%8A%80%E5%B7%A7-%E6%B7%BB%E5%8A%A0%E7%B1%BB%E6%B3%A8%E9%87%8A%E5%92%8C%E6%96%B9%E6%B3%95%E6%B3%A8%E9%87%8A/" target="_blank" rel="noopener">IntelliJ IDEA技巧-添加类注释和方法注释</a><br>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD<br>在原文的基础上，我根据配置过程，对方法注释做了一些修改:</p>
+<h3 id="类注释和方法注释"><a href="#类注释和方法注释" class="headerlink" title="类注释和方法注释"></a>类注释和方法注释</h3><p>关于这块的，参考<a href="https://yashuning.github.io/2018/04/28/IntelliJ-IDEA%E6%8A%80%E5%B7%A7-%E6%B7%BB%E5%8A%A0%E7%B1%BB%E6%B3%A8%E9%87%8A%E5%92%8C%E6%96%B9%E6%B3%95%E6%B3%A8%E9%87%8A/" target="_blank" rel="noopener">IntelliJ IDEA技巧-添加类注释和方法注释</a></p>
+<h1 id="lt-lt-lt-lt-lt-lt-lt-HEAD"><a href="#lt-lt-lt-lt-lt-lt-lt-HEAD" class="headerlink" title="&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD"></a>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</h1><p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>1e0cd2559dc7a50f66082a83c83e73c50bfe1646<br>在原文的基础上，我根据配置过程，对方法注释做了一些修改:</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <h4 id="方法注释模板"><a href="#方法注释模板" class="headerlink" title="方法注释模板"></a>方法注释模板</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* <span class="doctag">@description</span> $todo$</span></span><br><span class="line"><span class="comment">$params$</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> $return$</span></span><br><span class="line"><span class="comment">* <span class="doctag">@author</span> xdushepherd91</span></span><br><span class="line"><span class="comment">* <span class="doctag">@date</span> $date$ $time$</span></span><br><span class="line"><span class="comment">**/</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="params表达式"><a href="#params表达式" class="headerlink" title="params表达式"></a>params表达式</h4><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groovyScript(<span class="string">"def result=''; def params=\"$&#123;_1&#125;\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i &lt; params.size(); i++) &#123;result+='* @param ' + params[i] + ((i &lt; params.size() - 1) ? ':\\r\\n' : '')&#125;; return result"</span>, methodParameters())</span><br></pre></td></tr></table></figure>
 
-<p>=======</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>5c7db7a42a69578c34e100a403bd19bde493c0e5</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
 <h3 id="配置导出"><a href="#配置导出" class="headerlink" title="配置导出"></a>配置导出</h3><p>根据我们习惯配置好了一个idea的环境，推荐将配置导出，并存储再github仓库中，以备不时之需。</p>
 
       
@@ -570,7 +570,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#激活"><span class="nav-number">2.</span> <span class="nav-text">激活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#汉化"><span class="nav-number">3.</span> <span class="nav-text">汉化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#插件"><span class="nav-number">4.</span> <span class="nav-text">插件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stackoverflow"><span class="nav-number">4.1.</span> <span class="nav-text">stackoverflow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TranslationPlugin"><span class="nav-number">4.2.</span> <span class="nav-text">TranslationPlugin</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Alibaba-Java-Coding-Guidelines"><span class="nav-number">4.3.</span> <span class="nav-text">Alibaba Java Coding Guidelines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lombok"><span class="nav-number">4.4.</span> <span class="nav-text">Lombok</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rainbow-Brackets"><span class="nav-number">4.5.</span> <span class="nav-text">Rainbow Brackets</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类注释和方法注释"><span class="nav-number">5.</span> <span class="nav-text">类注释和方法注释</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法注释模板"><span class="nav-number">5.1.</span> <span class="nav-text">方法注释模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#params表达式"><span class="nav-number">5.2.</span> <span class="nav-text">params表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置导出"><span class="nav-number">6.</span> <span class="nav-text">配置导出</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#激活"><span class="nav-number">2.</span> <span class="nav-text">激活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#汉化"><span class="nav-number">3.</span> <span class="nav-text">汉化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#插件"><span class="nav-number">4.</span> <span class="nav-text">插件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stackoverflow"><span class="nav-number">4.1.</span> <span class="nav-text">stackoverflow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TranslationPlugin"><span class="nav-number">4.2.</span> <span class="nav-text">TranslationPlugin</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Alibaba-Java-Coding-Guidelines"><span class="nav-number">4.3.</span> <span class="nav-text">Alibaba Java Coding Guidelines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lombok"><span class="nav-number">4.4.</span> <span class="nav-text">Lombok</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rainbow-Brackets"><span class="nav-number">4.5.</span> <span class="nav-text">Rainbow Brackets</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类注释和方法注释"><span class="nav-number">5.</span> <span class="nav-text">类注释和方法注释</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#lt-lt-lt-lt-lt-lt-lt-HEAD"><span class="nav-number"></span> <span class="nav-text">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法注释模板"><span class="nav-number">0.1.</span> <span class="nav-text">方法注释模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#params表达式"><span class="nav-number">0.2.</span> <span class="nav-text">params表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置导出"><span class="nav-number">1.</span> <span class="nav-text">配置导出</span></a></li></div>
             
 
           </div>
