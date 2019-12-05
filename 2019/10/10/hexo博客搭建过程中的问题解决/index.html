@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="拾忆">
 <meta property="og:description" content="概述本文分为几个部分，其中大部分都是官网的内容，这里只提供框架，方便日后对照。  hexo博客的本地搭建。比较简单，基本上按照官网的流程走即可。 hexo博客部署问题解决。  第一部分 博客搭建本地环境搭建在使用hexo搭建博客的过程中，首先要面临安装的问题。在一个干净的环境中，我们需要以此安装：  nodejs git hexo-cli具体参考官方文档hexo环境搭建  第一篇博文1234567">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-05T08:08:50.319Z">
+<meta property="og:updated_time" content="2019-12-05T08:33:18.617Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo博客搭建过程中的问题解决">
 <meta name="twitter:description" content="概述本文分为几个部分，其中大部分都是官网的内容，这里只提供框架，方便日后对照。  hexo博客的本地搭建。比较简单，基本上按照官网的流程走即可。 hexo博客部署问题解决。  第一部分 博客搭建本地环境搭建在使用hexo搭建博客的过程中，首先要面临安装的问题。在一个干净的环境中，我们需要以此安装：  nodejs git hexo-cli具体参考官方文档hexo环境搭建  第一篇博文1234567">
@@ -374,14 +374,23 @@
 
 <p><a href="https://hexo.io/zh-cn/docs/commands" target="_blank" rel="noopener">指令</a>页面包含了更多详细的指令介绍。但是，我们最终的目的是在日常<br>写作中仅仅使用hexo new post title来生成博客，使用git相关命令推送博客内容即可。所以，对于其他的命令，知道就好。</p>
 <h3 id="主题和配置"><a href="#主题和配置" class="headerlink" title="主题和配置"></a>主题和配置</h3><p>在完成了基本的博客搭建工作之后，我们可以选择一款合适的主题，美化一下博客页面。我选择的是<a href="http://theme-next.iissnan.com/" target="_blank" rel="noopener">next</a>，非常经典的一款hexo<br>博客主题，基本上按照主题的指导，就可以配置出一款自己喜欢的博客皮肤了，当然，你也可以选择<a href="https://hexo.io/themes/" target="_blank" rel="noopener">其他主题</a>。</p>
-<h2 id="第二部分-博客部署"><a href="#第二部分-博客部署" class="headerlink" title="第二部分 博客部署"></a>第二部分 博客部署</h2><p>这个部分需要解决以下两个问题：</p>
+<h2 id="第二部分-博客部署"><a href="#第二部分-博客部署" class="headerlink" title="第二部分 博客部署"></a>第二部分 博客部署</h2><p>这个部分需要解决以下一些问题：</p>
 <ol>
-<li><p>如何让更多人看到我的博客内容，而不是仅仅自己本地查看？</p>
+<li><p>将博客内容发布到互联网中，可以被更多人看到。</p>
 </li>
-<li><p>我希望在公司，家里，甚至是任何一台新电脑上随时开始写博客并且部署，如何实现？</p>
+<li><p>我希望在公司，家里，甚至是任何一台新电脑上随时开始写博客。</p>
+</li>
+<li><p>在公司，家里，或者任何环境中写到一半地博客可以简单地保存进度，然后在另一个环境中快速地拿到最新地进度，继续写作。</p>
+</li>
+<li><p>如果我换了电脑了，我需要快速地将我的博客系统完整快速地复制一份出来</p>
 </li>
 </ol>
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p><a href="https://hexo.io/zh-cn/docs/github-pages" target="_blank" rel="noopener">github pages</a>部署，参考该页面中的部署方式，我们会得到这样一个结果：</p>
+<p>以上问题地答案就是，github，将整个博客（博客加主题配置等等）备份到github仓库中，并且：</p>
+<ol>
+<li>将完整地博客系统备份到仓库地其中一个分支，这个分支是我们日常工作地分支。</li>
+<li>将仓库的master分支作为github page目录，使用github提供的免费ci工具，实时从工作分支构建最新的博客并发布到<br>master分支上</li>
+</ol>
+<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><h4 id="基本的部署"><a href="#基本的部署" class="headerlink" title="基本的部署"></a>基本的部署</h4><p><a href="https://hexo.io/zh-cn/docs/github-pages" target="_blank" rel="noopener">github pages</a>部署，参考该页面中的部署方式，我们会得到这样一个结果：</p>
 <ol>
 <li><p>第一部分中的博客目录完全备份到github仓库中。这样，我们就不需要担心博客内容丢失了。</p>
 </li>
@@ -390,23 +399,27 @@
 <li><p>在任何一个安装了git，nodejs和hexo-cli的电脑上，我们只需要拉取仓库，然后就可以新建博客，开始写作了。</p>
 </li>
 </ol>
-<p>在第二部分一开始提出的问题，基本解决。</p>
-<p>在实际操作过程中，有一些问题需要注意。</p>
+<h4 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h4><h5 id="博客访问问题"><a href="#博客访问问题" class="headerlink" title="博客访问问题"></a>博客访问问题</h5><p>hexo官网教程指导创建的仓库，github pages只能解析master分支，而Travis自动化构建的时候，将博客内容发布到了gh-pages分支。这会导致博客内容无法浏览。</p>
+<p>解决方案如下：</p>
 <ol>
-<li><p>hexo官网教程指导创建的仓库，github pages只能解析master分支，而Travis自动化构建的时候，将博客内容发布到了gh-pages分支。这会导致博客内容无法浏览。解决方案如下：</p>
-<ol>
-<li>在博客主目录下,git checkout -b blog-source；git push origin blog-source:blog-source;</li>
-<li>git checkout master;git rm .;rm -rf *;git add .;git commit -m “清空master分支”;git pull origin master;git push origin master;</li>
-<li>修改Travis配置文件.travis.yml<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">10</span> <span class="comment"># use nodejs v10 LTS</span></span><br><span class="line"><span class="comment"># cache: npm</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line"><span class="attr">  only:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">blog-source</span> <span class="comment"># 修改构建分支</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="comment"># - git clone https://github.com/iissnan/hexo-theme-next themes/next</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">generate</span> <span class="comment"># generate static files</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  provider:</span> <span class="string">pages</span></span><br><span class="line"><span class="attr">  skip-cleanup:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  github-token:</span> <span class="string">$GH_TOKEN</span></span><br><span class="line"><span class="attr">  target_branch:</span> <span class="string">master</span>  <span class="comment">##修改目标分支为master</span></span><br><span class="line"><span class="attr">  keep-history:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  on:</span></span><br><span class="line"><span class="attr">    branch:</span> <span class="string">blog-source</span>  <span class="comment">## 修改构建分支</span></span><br><span class="line"><span class="attr">  local-dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure>
+<li><p>创建日常写博客的分支,这里取名为blog-source后面的Travis配置文件中需要用到:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b blog-source;</span><br><span class="line">git push origin blog-source:blog-source;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>清空master分支内容，并与远程仓库进行同步</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git checkout master;</span><br><span class="line">git rm .;</span><br><span class="line">rm -rf *;</span><br><span class="line">git add .;</span><br><span class="line">git commit -m <span class="string">"清空master分支"</span>;</span><br><span class="line">git pull origin master;</span><br><span class="line">git push origin master;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改Travis配置文件.travis.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">10</span> <span class="comment"># use nodejs v10 LTS</span></span><br><span class="line"><span class="comment"># cache: npm</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line"><span class="attr">  only:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">blog-source</span> <span class="comment"># 修改构建分支</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="comment"># - git clone https://github.com/iissnan/hexo-theme-next themes/next</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">generate</span> <span class="comment"># generate static files</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  provider:</span> <span class="string">pages</span></span><br><span class="line"><span class="attr">  skip-cleanup:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  github-token:</span> <span class="string">$GH_TOKEN</span></span><br><span class="line"><span class="attr">  target_branch:</span> <span class="string">master</span>  <span class="comment">##修改目标分支为master</span></span><br><span class="line"><span class="attr">  keep-history:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  on:</span></span><br><span class="line"><span class="attr">    branch:</span> <span class="string">blog-source</span>  <span class="comment">## 修改构建分支</span></span><br><span class="line"><span class="attr">  local-dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
-</li>
-<li><p>next主题也是一个git仓库，无法添加到博客仓库。解决方法如下：</p>
+<h5 id="主题配置问题"><a href="#主题配置问题" class="headerlink" title="主题配置问题"></a>主题配置问题</h5><p>next主题也是一个git仓库，无法添加到博客仓库。解决方法如下：</p>
 <ol>
-<li>进入themes/next目录，执行 rm -rf .git。</li>
-<li>返回主目录，git add themes/next。</li>
-</ol>
-</li>
+<li>cd themes/next;rm -rf .git;</li>
+<li>git add themes/next;</li>
+<li>git commit -m “备份主题配置”;</li>
+<li>git pull;</li>
+<li>git push;</li>
 </ol>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>经过如上步骤，我们得到了一个基本功能完善，由github仓库备份，随时可用的hexo博客系统。</p>
 <p>记忆力太差，博客来补。</p>
@@ -588,7 +601,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一部分-博客搭建"><span class="nav-number">2.</span> <span class="nav-text">第一部分 博客搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本地环境搭建"><span class="nav-number">2.1.</span> <span class="nav-text">本地环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一篇博文"><span class="nav-number">2.2.</span> <span class="nav-text">第一篇博文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主题和配置"><span class="nav-number">2.3.</span> <span class="nav-text">主题和配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二部分-博客部署"><span class="nav-number">3.</span> <span class="nav-text">第二部分 博客部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">3.1.</span> <span class="nav-text">部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一部分-博客搭建"><span class="nav-number">2.</span> <span class="nav-text">第一部分 博客搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本地环境搭建"><span class="nav-number">2.1.</span> <span class="nav-text">本地环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一篇博文"><span class="nav-number">2.2.</span> <span class="nav-text">第一篇博文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主题和配置"><span class="nav-number">2.3.</span> <span class="nav-text">主题和配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二部分-博客部署"><span class="nav-number">3.</span> <span class="nav-text">第二部分 博客部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">3.1.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本的部署"><span class="nav-number">3.1.1.</span> <span class="nav-text">基本的部署</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题解决"><span class="nav-number">3.1.2.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#博客访问问题"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">博客访问问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#主题配置问题"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">主题配置问题</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
