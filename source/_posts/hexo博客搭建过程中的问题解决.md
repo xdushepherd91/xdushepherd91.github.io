@@ -60,15 +60,26 @@ hexo server
 
 ## 第二部分 博客部署
 
-这个部分需要解决以下两个问题：
+这个部分需要解决以下一些问题：
 
-1. 如何让更多人看到我的博客内容，而不是仅仅自己本地查看？
+1. 将博客内容发布到互联网中，可以被更多人看到。
 
-2. 我希望在公司，家里，甚至是任何一台新电脑上随时开始写博客并且部署，如何实现？
+2. 我希望在公司，家里，甚至是任何一台新电脑上随时开始写博客。
+
+3. 在公司，家里，或者任何环境中写到一半地博客可以简单地保存进度，然后在另一个环境中快速地拿到最新地进度，继续写作。
+
+4. 如果我换了电脑了，我需要快速地将我的博客系统完整快速地复制一份出来
+
+
+以上问题地答案就是，github，将整个博客（博客加主题配置等等）备份到github仓库中，并且：
+1. 将完整地博客系统备份到仓库地其中一个分支，这个分支是我们日常工作地分支。
+2. 将仓库的master分支作为github page目录，使用github提供的免费ci工具，实时从工作分支构建最新的博客并发布到
+master分支上
 
 
 ### 部署
 
+#### 基本的部署
 [github pages](https://hexo.io/zh-cn/docs/github-pages)部署，参考该页面中的部署方式，我们会得到这样一个结果：
 
 1. 第一部分中的博客目录完全备份到github仓库中。这样，我们就不需要担心博客内容丢失了。
@@ -77,40 +88,58 @@ hexo server
 
 3. 在任何一个安装了git，nodejs和hexo-cli的电脑上，我们只需要拉取仓库，然后就可以新建博客，开始写作了。
 
-在第二部分一开始提出的问题，基本解决。
+#### 问题解决
 
-在实际操作过程中，有一些问题需要注意。
+##### 博客访问问题
 
-1. hexo官网教程指导创建的仓库，github pages只能解析master分支，而Travis自动化构建的时候，将博客内容发布到了gh-pages分支。这会导致博客内容无法浏览。解决方案如下：
-   1. 在博客主目录下,git checkout -b blog-source；git push origin blog-source:blog-source;
-   2. git checkout master;git rm .;rm -rf *;git add .;git commit -m "清空master分支";git pull origin master;git push origin master;
-   3. 修改Travis配置文件.travis.yml
+hexo官网教程指导创建的仓库，github pages只能解析master分支，而Travis自动化构建的时候，将博客内容发布到了gh-pages分支。这会导致博客内容无法浏览。
+
+解决方案如下：
+1. 创建日常写博客的分支,这里取名为blog-source后面的Travis配置文件中需要用到:
+````bash
+    git checkout -b blog-source;
+    git push origin blog-source:blog-source;
+````
+2. 清空master分支内容，并与远程仓库进行同步
+````bash
+    git checkout master;
+    git rm .;
+    rm -rf *;
+    git add .;
+    git commit -m "清空master分支";
+    git pull origin master;
+    git push origin master;
+````
+3. 修改Travis配置文件.travis.yml
 ``` yml
-sudo: false
-language: node_js
-node_js:
-  - 10 # use nodejs v10 LTS
-# cache: npm
-branches:
-  only:
-    - blog-source # 修改构建分支
-script:
-  # - git clone https://github.com/iissnan/hexo-theme-next themes/next
-  - hexo generate # generate static files
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GH_TOKEN
-  target_branch: master  ##修改目标分支为master
-  keep-history: true
-  on:
-    branch: blog-source  ## 修改构建分支
-  local-dir: public
+    sudo: false
+    language: node_js
+    node_js:
+      - 10 # use nodejs v10 LTS
+    # cache: npm
+    branches:
+      only:
+        - blog-source # 修改构建分支
+    script:
+      # - git clone https://github.com/iissnan/hexo-theme-next themes/next
+      - hexo generate # generate static files
+    deploy:
+      provider: pages
+      skip-cleanup: true
+      github-token: $GH_TOKEN
+      target_branch: master  ##修改目标分支为master
+      keep-history: true
+      on:
+        branch: blog-source  ## 修改构建分支
+      local-dir: public
 ```
-
-2. next主题也是一个git仓库，无法添加到博客仓库。解决方法如下：
-   1. 进入themes/next目录，执行 rm -rf .git。
-   2. 返回主目录，git add themes/next。
+##### 主题配置问题
+next主题也是一个git仓库，无法添加到博客仓库。解决方法如下：
+   1. cd themes/next;rm -rf .git;
+   2. git add themes/next;
+   3. git commit -m "备份主题配置";
+   4. git pull;
+   5. git push;
 
 ## 总结
 
