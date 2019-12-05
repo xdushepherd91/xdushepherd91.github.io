@@ -61,6 +61,7 @@ date: 2019-12-05 14:31:40
 ### 类注释和方法注释
 
 关于这块的，参考[IntelliJ IDEA技巧-添加类注释和方法注释](https://yashuning.github.io/2018/04/28/IntelliJ-IDEA%E6%8A%80%E5%B7%A7-%E6%B7%BB%E5%8A%A0%E7%B1%BB%E6%B3%A8%E9%87%8A%E5%92%8C%E6%96%B9%E6%B3%95%E6%B3%A8%E9%87%8A/)
+<<<<<<< HEAD
 在原文的基础上，我根据配置过程，对方法注释做了一些修改:
 
 #### 方法注释模板
@@ -83,6 +84,8 @@ groovyScript("def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s
 
 
 
+=======
+>>>>>>> 5c7db7a42a69578c34e100a403bd19bde493c0e5
 
 
 ### 配置导出
