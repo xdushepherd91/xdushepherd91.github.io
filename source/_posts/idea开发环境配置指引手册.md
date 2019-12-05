@@ -85,18 +85,24 @@ $params$
 groovyScript("def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i < params.size(); i++) {result+='* @param ' + params[i] + ((i < params.size() - 1) ? ':\\r\\n' : '')}; return result", methodParameters())
 ````
 
-<<<<<<< HEAD
-=======
-
-
-=======
->>>>>>> 5c7db7a42a69578c34e100a403bd19bde493c0e5
-
-
->>>>>>> 1e0cd2559dc7a50f66082a83c83e73c50bfe1646
 ### 配置导出
 
 根据我们习惯配置好了一个idea的环境，推荐将配置导出，并存储再github仓库中，以备不时之需。
+
+
+### 效率提升
+
+idea中提供了生成模板代码的方法，live template，平时常用的一些代码模板我们可以编辑成模板，以提升开发效率，此外，
+idea自带了很多已有的模板，见下图，大家可以自行学习
+[live template](/iamges/idea/live-template.png)
+
+当然，keymap中的快捷键会的越多越好咯。
+
+
+
+
+
+
 
 
 
