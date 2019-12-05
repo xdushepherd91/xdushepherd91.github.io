@@ -97,26 +97,3 @@ idea自带了很多已有的模板，见下图，大家可以自行学习
 [live template](/iamges/idea/live-template.png)
 
 当然，keymap中的快捷键会的越多越好咯。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
