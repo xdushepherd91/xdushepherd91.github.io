@@ -81,10 +81,6 @@ $params$
 groovyScript("def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i < params.size(); i++) {result+='* @param ' + params[i] + ((i < params.size() - 1) ? ':\\r\\n' : '')}; return result", methodParameters())
 ````
 
-
-
-
-
 ### 配置导出
 
 根据我们习惯配置好了一个idea的环境，推荐将配置导出，并存储再github仓库中，以备不时之需。
