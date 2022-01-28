@@ -8,7 +8,9 @@ branches:
     - source-branch # build master branch only
 script:
   # - git clone https://github.com/iissnan/hexo-theme-next themes/next
+  - hexo clean
   - hexo generate # generate static files
+  -
 deploy:
   provider: pages
   skip-cleanup: true
